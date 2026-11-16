@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Presentación Técnica: Capas DBA/SI y Topologías Físicas de BD</title>
+  <title>Bases de Datos II: Arquitecturas de BD vs. SI y Topologías Físicas</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
     * { box-sizing: border-box; }
@@ -26,7 +26,7 @@
 <body class="bg-[var(--background)] text-[var(--foreground)] antialiased m-0 p-0">
   <div class="max-w-4xl mx-auto px-4 py-5 md:px-6 md:py-7 space-y-5">
 
-    <!-- CABECERA SOBRIA Y DE ALTO CONTRASTE (IHC: VISIBILIDAD Y PROXIMIDAD) -->
+    <!-- CABECERA SOBRIA Y DE ALTO CONTRASTE (IHC) -->
     <header class="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden">
       <div class="w-full h-1 bg-[var(--background)]">
         <div id="topProgress" class="h-full bg-[var(--primary)] transition-w" style="width: 16.6%;"></div>
@@ -37,9 +37,11 @@
           <span id="slideBadge" class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] shrink-0">
             01 / 06
           </span>
-          <span class="text-xs font-semibold text-[var(--foreground)] truncate" id="topicLabel">
-            Pregunta 1 · Delimitación de Capas
-          </span>
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-[var(--foreground)] truncate" id="topicLabel">
+              Bases de Datos II · Pregunta 1: Delimitación de Capas
+            </div>
+          </div>
         </div>
 
         <div class="flex items-center gap-2">
@@ -48,7 +50,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
             </svg>
-            <span id="notesBtnLabel">Notas</span>
+            <span id="notesBtnLabel">Guía oral</span>
           </button>
 
           <div class="inline-flex items-center gap-1">
@@ -72,14 +74,14 @@
         <button data-slide="2" class="slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition">3. Topologías (P8)</button>
         <button data-slide="3" class="slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition">4. InfiniBand y SAN (P8)</button>
         <button data-slide="4" class="slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition">5. Hardware → App → UX (P8)</button>
-        <button data-slide="5" class="slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition">6. Cierre y Quiz</button>
+        <button data-slide="5" class="slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition">6. Síntesis y Quiz</button>
       </nav>
     </header>
 
     <!-- NOTAS DEL EXPOSITOR -->
     <aside id="speakerNotesBox" class="hidden bg-[var(--card)] border border-[var(--border)] border-l-4 border-l-[var(--primary)] rounded-xl px-5 py-3.5 text-sm">
       <div class="text-xs font-bold uppercase tracking-wide text-[var(--foreground)] mb-1">Guía oral sugerida (~1 min)</div>
-      <p id="speakerNotesText" class="text-[var(--foreground)] opacity-90 leading-relaxed"></p>
+      <p id="speakerNotesText" class="text-[var(--foreground)] leading-relaxed"></p>
     </aside>
 
     <!-- LIENZO PRINCIPAL -->
@@ -88,36 +90,37 @@
       <!-- =============================================================== -->
       <!-- LÁMINA 1: PREGUNTA 1 — DEFINICIÓN Y DELIMITACIÓN DE CAPAS       -->
       <!-- =============================================================== -->
-      <section class="slide active space-y-6" data-topic="Pregunta 1 · Definición y Delimitación de Capas"
-        data-notes="Tomando nuestro sistema transaccional de ropa como ejemplo: el DBA diseña la arquitectura interna del DBMS (tablas de Prendas, Variantes por talla y color, Inventario y Pedidos, con integridad ACID para no vender dos veces la última unidad). El Arquitecto de SI diseña toda la disposición funcional: el catálogo web/móvil, los servidores de backend del carrito y la integración con la pasarela de pagos y facturación electrónica. En medio está la frontera donde el código consulta el stock.">
+      <section class="slide active space-y-6" data-topic="Bases de Datos II · Pregunta 1: Delimitación de Capas"
+        data-notes="Para entender la diferencia entre Base de Datos y Sistema de Información, pensemos en nuestro sistema transaccional de ropa. La arquitectura de BD, liderada por el DBA, define cómo se almacenan, organizan, acceden y mantienen los datos dentro del DBMS: tablas de prendas, tallas, inventario, índices y reglas ACID. La arquitectura del sistema de información, liderada por el Arquitecto de SI, define toda la disposición funcional: el catálogo web/móvil, los servidores de aplicaciones del carrito y la integración con pasarela de pagos y facturación. Donde el código envía consultas SQL es la frontera compartida.">
 
         <div class="space-y-1">
+          <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Pregunta 1</div>
           <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">
             Definición y Delimitación de Capas (DBA vs. Arquitecto de SI)
           </h1>
           <p class="text-sm text-[var(--muted-foreground)]">
-            Aplicado al sistema transaccional de ropa: estructura interna del DBMS frente a disposición funcional de la plataforma.
+            Contraste entre la estructura lógico-física del DBMS y la disposición funcional del sistema, aplicado al sistema transaccional de ropa.
           </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-4 border-y border-[var(--border)]">
-          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-1)]">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">Arquitectura de Base de Datos · DBA</div>
-            <h2 class="text-base font-bold text-[var(--foreground)]">Diseño lógico-físico dentro del DBMS</h2>
-            <p class="text-sm text-[var(--foreground)] opacity-85 leading-relaxed">
-              Rige cómo se almacenan, organizan, acceden y mantienen los datos (tablas, índices, particiones, transacciones ACID, concurrencia y recuperación).
+          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-2)]">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Arquitectura de Base de Datos · DBA</div>
+            <h2 class="text-base font-bold text-[var(--foreground)]">Diseño lógico-físico interno del DBMS</h2>
+            <p class="text-sm text-[var(--foreground)] leading-relaxed">
+              Rige cómo se almacenan, organizan, acceden y mantienen los datos en el motor (esquema, índices B+Tree, particiones, Buffer Pool, ACID y WAL).
             </p>
           </div>
-          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-2)]">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">Arquitectura de SI · Arquitecto de SI</div>
-            <h2 class="text-base font-bold text-[var(--foreground)]">Disposición funcional del sistema global</h2>
-            <p class="text-sm text-[var(--foreground)] opacity-85 leading-relaxed">
-              Define la interfaz de usuario, los servidores de aplicaciones, balanceadores, cachés y la integración con servicios corporativos externos.
+          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-1)]">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Arquitectura de SI · Arquitecto de SI</div>
+            <h2 class="text-base font-bold text-[var(--foreground)]">Disposición funcional del sistema completo</h2>
+            <p class="text-sm text-[var(--foreground)] leading-relaxed">
+              Integra interfaz de usuario, servidores de aplicaciones, balanceadores, cachés y servicios corporativos externos (pagos, facturación, ERP).
             </p>
           </div>
         </div>
 
-        <!-- Maestro-Detalle de las Capas -->
+        <!-- Maestro-Detalle de las 4 Capas -->
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
           <div class="md:col-span-5 divide-y divide-[var(--border)] border border-[var(--border)] rounded-xl overflow-hidden" id="layersMaster"></div>
           <div class="md:col-span-7 bg-[var(--background)] border border-[var(--border)] rounded-xl p-5 space-y-4" id="layersDetail"></div>
@@ -127,22 +130,23 @@
       <!-- =============================================================== -->
       <!-- LÁMINA 2: PREGUNTA 1 — OBJETIVOS, MÉTRICAS E INFRAESTRUCTURA    -->
       <!-- =============================================================== -->
-      <section class="slide space-y-6" data-topic="Pregunta 1 · Objetivos, Métricas e Infraestructura"
-        data-notes="Aplicando la Pregunta 1 al sistema de ropa: en Objetivos, el DBA protege la integridad ACID al descontar stock de tallas y colores; el Arquitecto integra la tienda con pagos, envíos y facturación. En Métricas, el DBA vigila el Buffer Pool Hit Ratio en catálogo/inventario, los IOPS y los bloqueos en compras simultáneas; el Arquitecto mide la latencia p95 del checkout y la disponibilidad SLA. En Infraestructura, el DBA elige RAID 10 y separa discos de datos y WAL; el Arquitecto define balanceadores de carga y caché Redis para las fotos y precios.">
+      <section class="slide space-y-6" data-topic="Bases de Datos II · Pregunta 1: Objetivos, Métricas e Infraestructura"
+        data-notes="En la Pregunta 1 debemos explicar tres diferencias puntuales entre ambos roles. Primero, en objetivos de diseño: el DBA garantiza integridad ACID al descontar stock de prendas y optimiza lecturas en disco; el Arquitecto integra el catálogo con pagos y escala el sitio. Segundo, en métricas clave: el DBA mide aciertos en RAM (Buffer Pool Hit Ratio), IOPS y bloqueos; el Arquitecto mide latencia p95 del checkout, RPS y SLA. Tercero, en decisiones de infraestructura: el DBA define almacenamiento NVMe/SAN, RAID 10 y pooling; el Arquitecto define nube, balanceadores L7 y caché Redis.">
 
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div class="space-y-1">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Pregunta 1</div>
             <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">
-              Diferencias: Objetivos, Métricas e Infraestructura
+              Objetivos, Métricas Clave e Infraestructura
             </h1>
             <p class="text-sm text-[var(--muted-foreground)]">
-              Contrastado con ejemplos del sistema transaccional de venta de ropa.
+              Selecciona una dimensión para contrastar las responsabilidades del DBA y del Arquitecto de SI.
             </p>
           </div>
 
           <div class="inline-flex bg-[var(--background)] border border-[var(--border)] p-1 rounded-xl gap-1 self-start" id="axisControl">
-            <button data-ax="obj" class="ax-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">1. Objetivos de Diseño</button>
-            <button data-ax="kpi" class="ax-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">2. Métricas Clave</button>
+            <button data-ax="obj" class="ax-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">1. Objetivos</button>
+            <button data-ax="kpi" class="ax-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">2. Métricas</button>
             <button data-ax="inf" class="ax-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">3. Infraestructura</button>
           </div>
         </div>
@@ -153,16 +157,17 @@
       <!-- =============================================================== -->
       <!-- LÁMINA 3: PREGUNTA 8 — TOPOLOGÍAS DE RED                        -->
       <!-- =============================================================== -->
-      <section class="slide space-y-6" data-topic="Pregunta 8 · Topologías de Red en BD Paralelas"
-        data-notes="Si el sistema transaccional de ropa crece a varias sucursales o nodos en paralelo para repartir ventas e inventario, los servidores de BD se envían filas y confirmaciones de commit por la red. En Bus comparten un solo canal y colisionan cuando varias cajas venden a la vez. En Malla hay rutas alternas pero más saltos. El Hipercubo conecta los nodos con diámetro log2(N) y gran ancho de banda de bisección para cruzar ventas e inventario. Y en Árbol el switch raíz se satura, por eso se usa Fat-Tree.">
+      <section class="slide space-y-6" data-topic="Bases de Datos II · Pregunta 8: Topologías de Red"
+        data-notes="Ahora pasamos a la Pregunta 8. Cuando una tienda de ropa o sistema empresarial crece a múltiples sucursales y se apoya en una BD paralela o distribuida, los nodos deben intercambiar filas para resolver JOINs distribuidos o validar commits. Fíjense en las rutas resaltadas en el gráfico: el Bus satura un único canal; la Malla 2D requiere varios saltos de esquina a esquina; el Hipercubo acorta la distancia a log2(N) con muchas rutas paralelas; y el Árbol clásico crea cuello de botella en el switch raíz, lo cual el Fat-Tree soluciona duplicando rutas arriba.">
 
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div class="space-y-1">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Pregunta 8</div>
             <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">
               Topologías de red en BD paralelas y distribuidas
             </h1>
             <p class="text-sm text-[var(--muted-foreground)]">
-              Comparación de distancia entre nodos (diámetro), capacidad de corte y puntos de congestión en operaciones distribuidas.
+              Impacto del diseño físico de red en operaciones de redistribución (Hash Join Shuffle) y consenso entre nodos.
             </p>
           </div>
 
@@ -177,9 +182,9 @@
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
           <div class="md:col-span-7 bg-[var(--background)] border border-[var(--border)] rounded-xl p-4">
-            <canvas id="topoCanvas" class="w-full" style="height: 250px;"></canvas>
-            <div class="flex items-center justify-between pt-2.5 border-t border-[var(--border)] mt-2 text-xs text-[var(--foreground)]">
-              <span>Simulación de intercambio paralelo (8 nodos)</span>
+            <canvas id="topoCanvas" class="w-full" style="height: 255px;"></canvas>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-[var(--border)] mt-2 text-xs text-[var(--foreground)]">
+              <span id="topoCanvasNote">Ruta crítica resaltada en clúster de 8 nodos</span>
               <span id="topoStatusTag" class="font-bold">--</span>
             </div>
           </div>
@@ -191,16 +196,17 @@
       <!-- =============================================================== -->
       <!-- LÁMINA 4: PREGUNTA 8 — INFINIBAND Y REDES SAN                   -->
       <!-- =============================================================== -->
-      <section class="slide space-y-6" data-topic="Pregunta 8 · InfiniBand y Redes SAN"
-        data-notes="En temporada alta de ventas de ropa (como descuentos o cambio de colección), Ethernet TCP/IP tradicional hace pasar cada mensaje por el Kernel del SO y copia buffers en RAM, consumiendo CPU. InfiniBand con RDMA evita al Kernel (Kernel-Bypass y Zero-Copy) para sincronizar nodos de inventario en microsegundos. Y la red SAN dedica un canal aislado y sin pérdida de tramas para que las lecturas de stock y la escritura del WAL de cada factura nunca se frenen por el tráfico web de los compradores.">
+      <section class="slide space-y-6" data-topic="Bases de Datos II · Pregunta 8: InfiniBand y Redes SAN"
+        data-notes="Para acelerar la comunicación física existen dos tecnologías clave que pregunta la rúbrica. Primero, InfiniBand con RDMA para conectar nodos entre sí: a diferencia de Ethernet TCP/IP que entra al Kernel del SO y copia datos en buffers gastando CPU, RDMA hace Kernel-Bypass y Zero-Copy directo de RAM a RAM remota en microsegundos. Segundo, las redes SAN (Fibre Channel o NVMe-oF) para conectar servidores con cabinas de discos mediante un canal dedicado, redundante y lossless, protegiendo las lecturas de stock y la escritura del WAL.">
 
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div class="space-y-1">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Pregunta 8</div>
             <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">
-              Tecnologías físicas: InfiniBand y Redes SAN
+              Interconexión física: InfiniBand (RDMA) y Redes SAN
             </h1>
             <p class="text-sm text-[var(--muted-foreground)]">
-              Cómo el hardware especializado acelera la sincronización de nodos y protege el WAL y lecturas de inventario.
+              Diferencia entre comunicación nodo-a-nodo de ultra baja latencia y almacenamiento dedicado en bloques.
             </p>
           </div>
 
@@ -217,27 +223,40 @@
       <!-- =============================================================== -->
       <!-- LÁMINA 5: PREGUNTA 8 — LATENCIA Y ANCHO DE BANDA → APP → UX     -->
       <!-- =============================================================== -->
-      <section class="slide space-y-6" data-topic="Pregunta 8 · Latencia, Ancho de Banda, Aplicación y UX"
-        data-notes="Veámoslo en vivo sobre nuestro sistema de ropa. Cuando un cliente paga un pedido (OLTP), la app hace unas 20 consultas secuenciales (leer carrito, bloquear talla, descontar stock, grabar factura). Si la red de la BD tiene latencia alta, cada venta retiene los locks sobre la prenda más tiempo; por la Ley de Little, se llena el pool de conexiones del servidor y el cliente recibe un error 504 o hace doble clic duplicando el cobro. En cambio, al generar el reporte masivo de cierre de inventario (OLAP 250 MB), el límite lo marca el ancho de banda.">
+      <section class="slide space-y-6" data-topic="Bases de Datos II · Pregunta 8: Latencia, Ancho de Banda y UX"
+        data-notes="Aquí demostramos el impacto directo del hardware de BD sobre la aplicación y el usuario final. Usen los dos botones de escenario para mostrar el contraste en clase: en una venta de ropa (OLTP), múltiples round-trips sobre una red con alta latencia retienen los locks de inventario por más tiempo, llenan el pool de conexiones del servidor de aplicaciones (Ley de Little) y terminan dando errores 504 Timeout al comprador. Y en un cierre de inventario (OLAP 250 MB), un bajo ancho de banda retrasa la transferencia masiva de datos.">
 
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div class="space-y-1">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Pregunta 8</div>
             <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">
-              Impacto de Latencia y Ancho de Banda en la Aplicación y UX
+              Cómo la Latencia y Ancho de Banda condicionan la App y UX
             </h1>
             <p class="text-sm text-[var(--muted-foreground)]">
-              Simulación en el sistema transaccional de ropa: del hardware de BD a la pantalla de compra del cliente.
+              Simulación en vivo sobre el sistema transaccional de ropa: del canal físico al navegador del comprador.
             </p>
           </div>
 
-          <div class="inline-flex bg-[var(--background)] border border-[var(--border)] p-1 rounded-xl gap-1 self-start" id="workloadControl">
-            <button data-wk="oltp" class="wk-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">Venta Checkout (OLTP)</button>
-            <button data-wk="olap" class="wk-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">Cierre Inventario 250 MB (OLAP)</button>
+          <div class="inline-flex flex-wrap bg-[var(--background)] border border-[var(--border)] p-1 rounded-xl gap-1 self-start" id="presetBar">
+            <button data-pr="crit" class="pr-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--card)] text-[var(--foreground)] hover:border-[var(--primary)]">
+              Caso Crítico (Red Lenta)
+            </button>
+            <button data-pr="opt" class="pr-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--card)] text-[var(--foreground)] hover:border-[var(--primary)]">
+              Caso Óptimo (IB + SAN)
+            </button>
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-          <div class="md:col-span-5 bg-[var(--background)] border border-[var(--border)] rounded-xl p-5 space-y-5">
+          <div class="md:col-span-5 bg-[var(--background)] border border-[var(--border)] rounded-xl p-5 space-y-4">
+            <div class="space-y-1.5">
+              <div class="text-xs font-bold text-[var(--foreground)]">Tipo de operación en la tienda</div>
+              <div class="grid grid-cols-2 gap-1.5 bg-[var(--card)] border border-[var(--border)] p-1 rounded-lg" id="workloadControl">
+                <button data-wk="oltp" class="wk-btn px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition">Checkout (OLTP)</button>
+                <button data-wk="olap" class="wk-btn px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition">Cierre 250 MB (OLAP)</button>
+              </div>
+            </div>
+
             <div class="space-y-1.5">
               <label for="netSelect" class="text-xs font-bold text-[var(--foreground)] block">Canal físico de la base de datos</label>
               <select id="netSelect" class="w-full bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-lg px-3 py-2 text-xs font-semibold">
@@ -265,11 +284,26 @@
           </div>
 
           <div class="md:col-span-7 space-y-4 pl-5 border-l-2 border-[var(--border)]">
-            <div class="space-y-1">
+            <div class="space-y-2">
               <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">1. Nivel Hardware / Motor DBMS</div>
               <div class="flex items-baseline gap-3">
                 <span id="outDbMs" class="text-lg font-mono font-bold text-[var(--foreground)]">-- ms</span>
-                <span id="outDbNote" class="text-xs text-[var(--foreground)] opacity-85">--</span>
+                <span id="outDbNote" class="text-xs text-[var(--foreground)]">--</span>
+              </div>
+              <!-- Desglose compacto RTT vs Ancho de Banda -->
+              <div class="grid grid-cols-3 gap-2 pt-1 text-xs">
+                <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg px-2.5 py-1.5">
+                  <div class="text-[var(--muted-foreground)]">Por Latencia (RTT)</div>
+                  <div id="bdRtt" class="font-mono font-bold text-[var(--foreground)]">-- ms</div>
+                </div>
+                <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg px-2.5 py-1.5">
+                  <div class="text-[var(--muted-foreground)]">Por Ancho Banda</div>
+                  <div id="bdBw" class="font-mono font-bold text-[var(--foreground)]">-- ms</div>
+                </div>
+                <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg px-2.5 py-1.5">
+                  <div class="text-[var(--muted-foreground)]">Cola / Locks</div>
+                  <div id="bdQueue" class="font-mono font-bold text-[var(--foreground)]">-- ms</div>
+                </div>
               </div>
             </div>
 
@@ -281,7 +315,7 @@
               <div class="w-full h-2.5 rounded-full bg-[var(--background)] border border-[var(--border)] overflow-hidden">
                 <div id="outPoolBar" class="h-full transition-w" style="width: 40%;"></div>
               </div>
-              <p id="outPoolNote" class="text-xs text-[var(--foreground)] opacity-85">--</p>
+              <p id="outPoolNote" class="text-xs text-[var(--foreground)]">--</p>
             </div>
 
             <div class="space-y-1.5 pt-3 border-t border-[var(--border)]">
@@ -290,7 +324,7 @@
                 <span id="outUxBadge" class="text-xs font-bold px-2.5 py-0.5 rounded-full border-2 bg-[var(--background)] text-[var(--foreground)]">--</span>
                 <span id="outUxTitle" class="text-base font-bold text-[var(--foreground)]">--</span>
               </div>
-              <p id="outUxNote" class="text-xs text-[var(--foreground)] opacity-85 leading-relaxed">--</p>
+              <p id="outUxNote" class="text-xs text-[var(--foreground)] leading-relaxed">--</p>
             </div>
           </div>
         </div>
@@ -299,25 +333,26 @@
       <!-- =============================================================== -->
       <!-- LÁMINA 6: CIERRE Y COMPROBACIÓN                                 -->
       <!-- =============================================================== -->
-      <section class="slide space-y-6" data-topic="Cierre · Síntesis y Comprobación"
-        data-notes="Para cerrar la exposición: 1) El DBA diseña y mantiene la estructura lógico-física, integridad y rendimiento de disco dentro del DBMS; el Arquitecto de SI diseña la disposición funcional entre interfaz de usuario, servidores de aplicaciones y servicios corporativos. 2) Las topologías de red y tecnologías como InfiniBand y SAN determinan la latencia y ancho de banda físicos; cuando se degradan, retienen bloqueos, saturan al backend y deterioran directamente la experiencia del usuario final.">
+      <section class="slide space-y-6" data-topic="Bases de Datos II · Síntesis y Comprobación"
+        data-notes="En resumen para cerrar: en la Pregunta 1, el DBA diseña la estructura lógico-física y consistencia ACID dentro del DBMS, mientras el Arquitecto de SI organiza la interfaz, los servidores de aplicaciones y los servicios corporativos. En la Pregunta 8, las topologías de red y tecnologías físicas como InfiniBand RDMA y SAN determinan la latencia y el ancho de banda; si el canal físico se degrada, los locks retienen conexiones, el pool se agota y el usuario final percibe lentitud o errores de sistema.">
 
         <div class="space-y-1">
+          <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Cierre</div>
           <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">Síntesis de las Preguntas 1 y 8</h1>
           <p class="text-sm text-[var(--muted-foreground)]">Conclusiones clave y cuatro preguntas rápidas de comprobación.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-4 border-y border-[var(--border)]">
-          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-1)]">
-            <div class="text-xs font-bold uppercase text-[var(--foreground)]">Conclusión Pregunta 1</div>
-            <p class="text-sm text-[var(--foreground)] opacity-85 leading-relaxed">
-              El <strong>DBA</strong> gobierna el almacenamiento, organización, acceso e integridad ACID en el DBMS; el <strong>Arquitecto de SI</strong> orquesta interfaz, servidores de aplicaciones e integración de servicios corporativos.
+          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-2)]">
+            <div class="text-xs font-bold uppercase text-[var(--muted-foreground)]">Conclusión Pregunta 1</div>
+            <p class="text-sm text-[var(--foreground)] leading-relaxed">
+              El <strong>DBA</strong> gobierna almacenamiento, organización, acceso, índices e integridad ACID en el DBMS; el <strong>Arquitecto de SI</strong> orquesta interfaz, servidores de aplicaciones e integración de servicios corporativos.
             </p>
           </div>
-          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-2)]">
-            <div class="text-xs font-bold uppercase text-[var(--foreground)]">Conclusión Pregunta 8</div>
-            <p class="text-sm text-[var(--foreground)] opacity-85 leading-relaxed">
-              Topologías eficientes (<strong>Hipercubo / Fat-Tree</strong>) con <strong>InfiniBand (RDMA)</strong> y <strong>redes SAN</strong> evitan retención de locks, agotamiento del pool de aplicación y timeouts visibles para el usuario final.
+          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-1)]">
+            <div class="text-xs font-bold uppercase text-[var(--muted-foreground)]">Conclusión Pregunta 8</div>
+            <p class="text-sm text-[var(--foreground)] leading-relaxed">
+              Topologías de bajo diámetro (<strong>Hipercubo / Fat-Tree</strong>) con <strong>InfiniBand (RDMA)</strong> y <strong>redes SAN</strong> evitan retención de locks, agotamiento del pool de aplicación y timeouts en la UX.
             </p>
           </div>
         </div>
@@ -336,7 +371,7 @@
 
   <script>
     // =========================================================================
-    // NAVEGACIÓN PRINCIPAL (CON ALTO CONTRASTE EN TODOS LOS ESTADOS)
+    // NAVEGACIÓN PRINCIPAL
     // =========================================================================
     let currentSlide = 0;
     const slides = Array.from(document.querySelectorAll('.slide'));
@@ -374,32 +409,36 @@
     document.getElementById('toggleNotesBtn').addEventListener('click', () => {
       notesOpen = !notesOpen;
       document.getElementById('speakerNotesBox').classList.toggle('hidden', !notesOpen);
-      document.getElementById('notesBtnLabel').textContent = notesOpen ? 'Ocultar notas' : 'Notas';
+      document.getElementById('notesBtnLabel').textContent = notesOpen ? 'Ocultar guía' : 'Guía oral';
     });
 
     // =========================================================================
-    // LÁMINA 1: CAPAS DEL SISTEMA DE INFORMACIÓN Y DE LA BASE DE DATOS
+    // LÁMINA 1: CAPAS (MAESTRO-DETALLE ESTRUCTURADO)
     // =========================================================================
     const layers = [
       {
         id: 0, title: '1. Interfaz de Usuario (UI)', role: 'Arquitecto de SI', color: 'var(--chart-1)',
-        what: 'Catálogo web/móvil de prendas, filtros por talla/color, carrito de compras y entrega de imágenes estáticas mediante CDN.',
-        example: 'Define cómo se muestran las prendas y el checkout sin recargar toda la página al cambiar una talla.'
+        what: 'Aplicación web/móvil de la tienda y entrega de recursos estáticos mediante CDN.',
+        ropa: 'Catálogo de prendas, selector de tallas/colores, carrito de compras y vista de checkout.',
+        fail: 'Diseño pesado o sin caché de imágenes ralentiza el navegador incluso cuando la BD está libre.'
       },
       {
         id: 1, title: '2. Servidores de Aplicaciones e Integración', role: 'Arquitecto de SI', color: 'var(--chart-1)',
-        what: 'Lógica de pedidos, API Gateways, balanceadores, caché Redis (precios/catálogo) e integración con pasarela de pagos, envíos y facturación electrónica.',
-        example: 'Si miles de usuarios miran el catálogo a la vez, Redis responde los precios y fotos sin saturar la base de datos.'
+        what: 'Lógica de negocio, balanceadores de carga L4/L7, caché en memoria (Redis) e integración corporativa.',
+        ropa: 'Backend de pedidos, pasarela de pagos, facturación electrónica, sistema de envíos y caché de precios.',
+        fail: 'Una pasarela bancaria lenta sin Circuit Breaker ni timeouts bloquea hilos y cae todo el sitio web.'
       },
       {
         id: 2, title: '3. Frontera de Acceso a Datos', role: 'Responsabilidad Compartida', color: 'var(--warning)',
-        what: 'Consultas SQL enviadas al confirmar una venta (verificar stock, descontar inventario, crear factura) y administración del pool de conexiones.',
-        example: 'Si el backend valida 15 prendas del carrito en un bucle (consultas N+1), colapsa el motor aunque los discos sean rápidos.'
+        what: 'Interfaz entre programación y DBMS: gestión del pool de conexiones, ORMs y sentencias SQL enviadas.',
+        ropa: 'Consultas al validar cada prenda del carrito, descontar stock de variante y confirmar el pedido.',
+        fail: 'Consultas N+1 en bucle o pools mal dimensionados agotan la memoria y sesiones del DBMS.'
       },
       {
         id: 3, title: '4. Motor DBMS y Almacenamiento Físico', role: 'DBA', color: 'var(--chart-2)',
-        what: 'Tablas (Prendas, Variantes_Talla_Color, Inventario, Pedidos), índices B+Tree por SKU, Buffer Pool en RAM, transacciones ACID/locks y Write-Ahead Log (WAL).',
-        example: 'Garantiza consistencia ACID para que dos clientes no compren la última chaqueta talla M al mismo tiempo, y separa discos de datos y logs.'
+        what: 'Diseño lógico-físico: tablas, índices B+Tree, particiones, Buffer Pool en RAM, ACID/locks, WAL y discos.',
+        ropa: 'Tablas Prendas, Variantes_Talla_Color, Inventario y Pedidos con bloqueo ACID al vender la última unidad.',
+        fail: 'Sin índices o con WAL lento se producen Full Table Scans, deadlocks en inventario y riesgo de pérdida ante fallos.'
       }
     ];
     let activeLayer = 2;
@@ -437,59 +476,66 @@
         </div>
         <div class="space-y-3 text-sm">
           <div>
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-1">Componentes que gobierna</div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-0.5">Componentes técnicos</div>
             <p class="text-[var(--foreground)] leading-relaxed">${cur.what}</p>
           </div>
           <div>
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-1">Impacto operativo</div>
-            <p class="text-[var(--foreground)] opacity-85 leading-relaxed">${cur.example}</p>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-0.5">En el sistema transaccional de ropa</div>
+            <p class="text-[var(--foreground)] leading-relaxed">${cur.ropa}</p>
+          </div>
+          <div class="pt-2 border-t border-[var(--border)]">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-0.5">Riesgo si falla el diseño</div>
+            <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">${cur.fail}</p>
           </div>
         </div>
       `;
     }
 
     // =========================================================================
-    // LÁMINA 2: COMPARATIVA ESTRICTA P1 (OBJETIVOS, MÉTRICAS, INFRAESTRUCTURA)
+    // LÁMINA 2: COMPARATIVA ESTRICTA P1 + CASO APLICADO AL SISTEMA DE ROPA
     // =========================================================================
     const axisData = {
       obj: {
         title: '1. Objetivos de Diseño',
         dba: [
-          'Garantizar integridad y consistencia ACID (PK/FK entre Pedidos, Detalle y Stock de tallas sin ventas duplicadas).',
-          'Minimizar E/S física en disco mediante índices B+Tree por SKU/categoría, particionamiento de ventas por año y ajuste del optimizador SQL.',
-          'Asegurar disponibilidad y recuperabilidad de facturas y transacciones (backups, PITR y replicación).'
+          'Garantizar integridad y consistencia ACID (PK/FK entre Pedidos, Detalle y Stock de tallas sin sobreventas).',
+          'Minimizar E/S física en disco mediante índices B+Tree por SKU, particionamiento de ventas y ajuste del Query Optimizer.',
+          'Asegurar disponibilidad y recuperabilidad del dato (backups, Point-in-Time Recovery y replicación).'
         ],
         arq: [
-          'Alinear la disposición funcional de la tienda con el flujo de negocio (catálogo, carrito, pagos y despacho).',
-          'Garantizar interoperabilidad e integración con servicios externos (pasarela bancaria, facturación electrónica, couriers y ERP).',
-          'Lograr escalabilidad horizontal en temporadas altas (Black Friday), tolerancia a fallos parciales y mantenibilidad.'
-        ]
+          'Alinear la disposición funcional del sistema con los procesos del negocio (catálogo, carrito, pagos y despacho).',
+          'Garantizar interoperabilidad e integración con servicios corporativos (pasarela bancaria, facturación electrónica, ERP).',
+          'Lograr escalabilidad horizontal en picos de demanda, modularidad y tolerancia a fallos parciales.'
+        ],
+        caseNote: 'Ejemplo en temporada alta: el DBA evita que dos compradores descuenten la última chaqueta talla M; el Arquitecto evita que una caída del servicio de envíos bloquee la tienda.'
       },
       kpi: {
         title: '2. Métricas Clave (KPIs)',
         dba: [
-          'Buffer Pool / Cache Hit Ratio (% de consultas de inventario/catálogo resueltas desde RAM sin ir a disco).',
-          'IOPS, latencia de disco/WAL al confirmar ventas y contención por bloqueos (Lock Wait Time en filas de stock caliente).',
-          'Transacciones por segundo (TPS), costo de planes de ejecución y retraso de réplicas (Replication Lag).'
+          'Buffer Pool / Cache Hit Ratio (% de lecturas de inventario/catálogo resueltas en RAM sin ir a disco).',
+          'IOPS, latencia de disco/WAL (ms) y contención por bloqueos (Lock Wait Time / Deadlocks en inventario caliente).',
+          'Transacciones por segundo (TPS), costo de planes SQL y retraso entre réplicas (Replication Lag).'
         ],
         arq: [
-          'Latencia End-to-End percibida por el comprador (TTFB y percentiles p95 / p99 desde clic hasta confirmación).',
+          'Latencia End-to-End percibida por el comprador (TTFB y percentiles p95 / p99 en el checkout).',
           'Throughput sistémico en peticiones por segundo (RPS) y concurrencia de compradores en línea.',
-          'Disponibilidad del servicio (SLA/SLO, ej. 99.95%), tasa de errores HTTP 5xx y tiempo de recuperación (MTTR).'
-        ]
+          'Disponibilidad global del servicio (SLA/SLO, ej. 99.95%), tasa de errores HTTP 5xx y MTTR.'
+        ],
+        caseNote: 'Si el checkout tarda 4 s: el Arquitecto detecta p95 elevado en la API de pagos y revisa si el cuello está en una pasarela externa o en la consulta SQL.'
       },
       inf: {
         title: '3. Decisiones de Infraestructura',
         dba: [
-          'Selección del motor DBMS y asignación de RAM respecto al Working Set (tablas de prendas, precios y pedidos activos).',
-          'Subsistema de almacenamiento (NVMe local, SAN Fibre Channel, RAID 10) separando Datafiles, WAL Logs y TempDB.',
-          'Topología de alta disponibilidad de BD (clúster Activo-Pasivo/Consenso) y connection poolers (PgBouncer).'
+          'Selección del motor DBMS y dimensionamiento de RAM para alojar el Working Set (prendas, variantes e índices).',
+          'Subsistema de E/S (NVMe local, SAN Fibre Channel, RAID 10) separando físicamente Datafiles, WAL Logs y TempDB.',
+          'Topología de alta disponibilidad de BD (Activo-Pasivo/Consenso) y connection poolers (PgBouncer).'
         ],
         arq: [
-          'Estrategia de despliegue y cómputo (Cloud/On-premise, contenedores/Kubernetes para el backend de ventas).',
-          'Redes corporativas y perimetrales (Balanceadores L4/L7, API Gateways, WAF y CDN para imágenes de prendas).',
-          'Middleware desacoplado (Redis para sesiones/catálogo, colas Kafka/RabbitMQ para envío de correos y facturas).'
-        ]
+          'Modelo de despliegue y cómputo (Cloud pública, híbrida, on-premise, contenedores/Kubernetes).',
+          'Topología de red perimetral (Balanceadores L4/L7, API Gateways, WAF, subredes DMZ y CDN de fotos).',
+          'Middleware desacoplado (Redis para sesiones/catálogo, colas Kafka/RabbitMQ para envío de facturas por correo).'
+        ],
+        caseNote: 'Decisión conjunta clave: el Arquitecto descarga lecturas de catálogo a Redis; el DBA protege el disco del WAL para confirmar ventas sin esperas.'
       }
     };
     let activeAxis = 'obj';
@@ -506,55 +552,68 @@
         <div class="text-sm font-bold text-[var(--foreground)] pb-3 mb-4 border-b border-[var(--border)]">${d.title}</div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-3 pl-3 border-l-4 border-[var(--chart-2)]">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">DBA (Administrador de BD)</div>
-            <ul class="space-y-2.5 text-sm text-[var(--foreground)] opacity-90">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">DBA (Administrador de BD)</div>
+            <ul class="space-y-2.5 text-sm text-[var(--foreground)]">
               ${d.dba.map(i => `<li class="flex gap-2"><span class="font-bold">•</span><span>${i}</span></li>`).join('')}
             </ul>
           </div>
           <div class="space-y-3 pl-3 border-l-4 border-[var(--chart-1)]">
-            <div class="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">Arquitecto de Sistemas de Información</div>
-            <ul class="space-y-2.5 text-sm text-[var(--foreground)] opacity-90">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Arquitecto de Sistemas de Información</div>
+            <ul class="space-y-2.5 text-sm text-[var(--foreground)]">
               ${d.arq.map(i => `<li class="flex gap-2"><span class="font-bold">•</span><span>${i}</span></li>`).join('')}
             </ul>
           </div>
+        </div>
+        <div class="mt-5 pt-3 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)]">
+          <strong class="text-[var(--foreground)]">Aplicación en tienda de ropa:</strong> ${d.caseNote}
         </div>
       `;
     }
     document.querySelectorAll('.ax-btn').forEach(b => b.addEventListener('click', () => { activeAxis = b.dataset.ax; renderAxis(); }));
 
     // =========================================================================
-    // LÁMINA 3: TOPOLOGÍAS EN CANVAS (CON ALTO CONTRASTE)
+    // LÁMINA 3: TOPOLOGÍAS EN CANVAS CON RUTAS DIDÁCTICAS REALES
     // =========================================================================
     const topos = {
       bus: {
         status: 'Contención O(1/N)',
         hops: '1 salto físico (canal único)',
-        pro: 'Cableado mínimo y bajo costo para clústeres pequeños.',
-        con: 'Todos los nodos compiten por el mismo canal: en operaciones paralelas (Hash Join), el ancho de banda por nodo cae como 1/N.'
+        bisection: 'O(1) — Un canal compartido',
+        note: 'Todos compiten por el mismo bus: las ventas paralelas colisionan y hacen cola',
+        pro: 'Cableado mínimo y bajo costo para clústeres muy pequeños.',
+        con: 'En operaciones paralelas (Hash Join entre sucursales), el ancho de banda por nodo cae como 1/N.'
       },
       mesh: {
         status: 'Diámetro O(√N)',
         hops: 'O(√N) saltos entre extremos',
-        pro: 'Número fijo de enlaces por nodo (≤4) y rutas alternativas ante fallos.',
-        con: 'Mensajes entre nodos opuestos atraviesan saltos intermedios, elevando la latencia en commits distribuidos.'
+        bisection: 'O(√N) enlaces en corte central',
+        note: 'Ruta destacada N0 → N7 atraviesa 4 saltos intermedios',
+        pro: 'Número fijo de puertos por nodo (≤4) y rutas alternativas si falla un enlace.',
+        con: 'Mensajes entre nodos opuestos recorren varios saltos, elevando la latencia de commits.'
       },
       hypercube: {
         status: 'Diámetro log₂(N)',
-        hops: 'log₂(N) = 3 saltos (8 nodos)',
-        pro: 'Diámetro logarítmico muy corto y alto ancho de banda de bisección (N/2) para redistribución de tuplas (Shuffle).',
-        con: 'Escala en potencias de 2 y requiere más puertos conforme crece la dimensión.'
+        hops: 'log₂(8) = 3 saltos máx.',
+        bisection: 'Excelente: N / 2 enlaces paralelos',
+        note: 'Nodos etiquetados en binario (000 a 111): distancia máx. 3 saltos',
+        pro: 'Diámetro logarítmico corto y alto ancho de banda de bisección para redistribuir tuplas (Shuffle).',
+        con: 'Escala rígidamente en potencias de 2 y exige más puertos por nodo.'
       },
       tree: {
         status: 'Saturación en raíz',
         hops: '4 saltos pasando por la raíz',
-        pro: 'Estructura jerárquica ordenada, simple de cablear entre racks.',
-        con: 'Sufre sobresuscripción: todo el tráfico entre subárboles compite por los enlaces hacia el switch raíz.'
+        bisection: 'Crítica: 1 enlace superior (sobresuscrito)',
+        note: 'El tráfico entre sucursales izquierda/derecha congestiona el switch Raíz',
+        pro: 'Estructura jerárquica ordenada por racks, sencilla de cablear.',
+        con: 'El switch raíz concentra todo el tráfico inter-rama creando cuello de botella.'
       },
       fattree: {
         status: 'No bloqueante',
         hops: 'Saltos uniformes (Spine-Leaf)',
-        pro: 'Multiplica los enlaces hacia los switches superiores (Spine) eliminando la congestión en la raíz.',
-        con: 'Requiere mayor inversión en switches de núcleo y cableado.'
+        bisection: '100% capacidad agregada sin bloqueos',
+        note: 'Múltiples switches Spine reparten el tráfico paralelo sin atascos',
+        pro: 'Multiplica enlaces hacia niveles superiores eliminando la sobresuscripción de la raíz.',
+        con: 'Mayor inversión en switches de núcleo y cableado estructurado.'
       }
     };
     let activeTopo = 'bus', anim = 0;
@@ -569,7 +628,8 @@
         primary: g('--primary', '#3b82f6'),
         card: g('--card', '#1e293b'),
         err: g('--error', '#ef4444'),
-        warn: g('--warning', '#f59e0b')
+        warn: g('--warning', '#f59e0b'),
+        ok: g('--success', '#22c55e')
       };
     }
 
@@ -582,18 +642,25 @@
       });
       const t = topos[activeTopo];
       document.getElementById('topoStatusTag').textContent = t.status;
+      document.getElementById('topoCanvasNote').textContent = t.note;
       document.getElementById('topoSummary').innerHTML = `
-        <div class="pb-3 border-b border-[var(--border)]">
-          <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Diámetro (saltos máx.)</div>
-          <div class="text-base font-bold text-[var(--foreground)] mt-0.5">${t.hops}</div>
+        <div class="grid grid-cols-2 gap-3 pb-3 border-b border-[var(--border)]">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Diámetro</div>
+            <div class="text-sm font-bold text-[var(--foreground)] mt-0.5">${t.hops}</div>
+          </div>
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">BW Bisección</div>
+            <div class="text-sm font-bold text-[var(--foreground)] mt-0.5">${t.bisection}</div>
+          </div>
         </div>
         <div class="pl-3 border-l-4 border-[var(--success)] space-y-1">
-          <div class="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">Ventaja</div>
-          <p class="text-sm text-[var(--foreground)] opacity-85 leading-relaxed">${t.pro}</p>
+          <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Ventaja</div>
+          <p class="text-sm text-[var(--foreground)] leading-relaxed">${t.pro}</p>
         </div>
         <div class="pl-3 border-l-4 border-[var(--warning)] space-y-1">
-          <div class="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">Cuello en BD paralelas</div>
-          <p class="text-sm text-[var(--foreground)] opacity-85 leading-relaxed">${t.con}</p>
+          <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Cuello en BD paralelas</div>
+          <p class="text-sm text-[var(--foreground)] leading-relaxed">${t.con}</p>
         </div>
       `;
     }
@@ -602,58 +669,63 @@
       const r = tCanvas.getBoundingClientRect();
       if (!r.width) return;
       const dpr = window.devicePixelRatio || 1;
-      tCanvas.width = r.width * dpr; tCanvas.height = 250 * dpr;
+      tCanvas.width = r.width * dpr; tCanvas.height = 255 * dpr;
       tCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     function drawTopo() {
       const r = tCanvas.getBoundingClientRect();
       if (!r.width) { requestAnimationFrame(drawTopo); return; }
-      const w = r.width, h = 250, c = getColors();
+      const w = r.width, h = 255, c = getColors();
       tCtx.clearRect(0, 0, w, h);
 
       const nodes = [], edges = [], padX = 48;
       if (activeTopo === 'bus') {
         const by = h / 2;
-        edges.push({ x1: 30, y1: by, x2: w - 30, y2: by, hot: true, w: 3.5 });
+        edges.push({ x1: 30, y1: by, x2: w - 30, y2: by, hot: true, w: 4 });
         for (let i = 0; i < 8; i++) {
-          const x = padX + (i / 7) * (w - 2 * padX), y = i % 2 === 0 ? by - 58 : by + 58;
+          const x = padX + (i / 7) * (w - 2 * padX), y = i % 2 === 0 ? by - 60 : by + 60;
           nodes.push({ x, y, lbl: 'N' + i });
           edges.push({ x1: x, y1: y, x2: x, y2: by, hot: true });
         }
       } else if (activeTopo === 'mesh') {
-        for (let row = 0; row < 2; row++) for (let col = 0; col < 4; col++) nodes.push({ x: padX + col * ((w - 2 * padX) / 3), y: 65 + row * 120, lbl: 'N' + (row * 4 + col) });
+        for (let row = 0; row < 2; row++) for (let col = 0; col < 4; col++) nodes.push({ x: padX + col * ((w - 2 * padX) / 3), y: 65 + row * 125, lbl: 'N' + (row * 4 + col) });
+        const routeSet = new Set(['0-1', '1-2', '2-3', '3-7']);
         for (let row = 0; row < 2; row++) for (let col = 0; col < 4; col++) {
           const u = row * 4 + col;
-          if (col < 3) edges.push({ a: u, b: u + 1 });
-          if (row < 1) edges.push({ a: u, b: u + 4 });
+          if (col < 3) edges.push({ a: u, b: u + 1, hi: routeSet.has(`${u}-${u + 1}`) });
+          if (row < 1) edges.push({ a: u, b: u + 4, hi: routeSet.has(`${u}-${u + 4}`) });
         }
       } else if (activeTopo === 'hypercube') {
-        const cx = w / 2, cy = h / 2, p1 = [[-50,-50],[50,-50],[50,50],[-50,50]], p2 = [[-94,-94],[94,-94],[94,94],[-94,94]];
-        for (let i = 0; i < 4; i++) nodes.push({ x: cx + p1[i][0], y: cy + p1[i][1], lbl: 'N' + i });
-        for (let i = 0; i < 4; i++) nodes.push({ x: cx + p2[i][0], y: cy + p2[i][1], lbl: 'N' + (i + 4) });
-        for (let i = 0; i < 8; i++) for (let b = 0; b < 3; b++) { const j = i ^ (1 << b); if (i < j) edges.push({ a: i, b: j }); }
+        const cx = w / 2, cy = h / 2, p1 = [[-52,-52],[52,-52],[52,52],[-52,52]], p2 = [[-96,-96],[96,-96],[96,96],[-96,96]];
+        for (let i = 0; i < 4; i++) nodes.push({ x: cx + p1[i][0], y: cy + p1[i][1], lbl: i.toString(2).padStart(3, '0') });
+        for (let i = 0; i < 4; i++) nodes.push({ x: cx + p2[i][0], y: cy + p2[i][1], lbl: (i + 4).toString(2).padStart(3, '0') });
+        const hiSet = new Set(['0-1', '1-3', '3-7']);
+        for (let i = 0; i < 8; i++) for (let b = 0; b < 3; b++) {
+          const j = i ^ (1 << b);
+          if (i < j) edges.push({ a: i, b: j, hi: hiSet.has(`${i}-${j}`) });
+        }
       } else if (activeTopo === 'tree') {
-        nodes.push({ x: w / 2, y: 32, lbl: 'Raíz', sw: true, hot: true });
-        nodes.push({ x: w * 0.28, y: 105, lbl: 'SW 1', sw: true }); nodes.push({ x: w * 0.72, y: 105, lbl: 'SW 2', sw: true });
+        nodes.push({ x: w / 2, y: 34, lbl: 'Raíz', sw: true, hot: true });
+        nodes.push({ x: w * 0.28, y: 108, lbl: 'SW 1', sw: true }); nodes.push({ x: w * 0.72, y: 108, lbl: 'SW 2', sw: true });
         edges.push({ a: 0, b: 1, hot: true }, { a: 0, b: 2, hot: true });
-        for (let i = 0; i < 8; i++) { const idx = nodes.length; nodes.push({ x: padX + (i / 7) * (w - 2 * padX), y: 212, lbl: 'N' + i }); edges.push({ a: i < 4 ? 1 : 2, b: idx }); }
+        for (let i = 0; i < 8; i++) { const idx = nodes.length; nodes.push({ x: padX + (i / 7) * (w - 2 * padX), y: 215, lbl: 'N' + i }); edges.push({ a: i < 4 ? 1 : 2, b: idx }); }
       } else if (activeTopo === 'fattree') {
-        for (let s = 0; s < 3; s++) nodes.push({ x: w * (0.25 + s * 0.25), y: 32, lbl: 'Sp ' + (s + 1), sw: true });
-        for (let l = 0; l < 4; l++) { const li = nodes.length; nodes.push({ x: w * (0.14 + l * 0.24), y: 108, lbl: 'Lf ' + (l + 1), sw: true }); for (let s = 0; s < 3; s++) edges.push({ a: s, b: li }); }
-        for (let i = 0; i < 8; i++) { const idx = nodes.length; nodes.push({ x: padX + (i / 7) * (w - 2 * padX), y: 212, lbl: 'N' + i }); edges.push({ a: 3 + Math.floor(i / 2), b: idx }); }
+        for (let s = 0; s < 3; s++) nodes.push({ x: w * (0.25 + s * 0.25), y: 34, lbl: 'Sp ' + (s + 1), sw: true });
+        for (let l = 0; l < 4; l++) { const li = nodes.length; nodes.push({ x: w * (0.14 + l * 0.24), y: 110, lbl: 'Lf ' + (l + 1), sw: true }); for (let s = 0; s < 3; s++) edges.push({ a: s, b: li, hi: true }); }
+        for (let i = 0; i < 8; i++) { const idx = nodes.length; nodes.push({ x: padX + (i / 7) * (w - 2 * padX), y: 215, lbl: 'N' + i }); edges.push({ a: 3 + Math.floor(i / 2), b: idx }); }
       }
 
       edges.forEach((e, idx) => {
         const x1 = e.x1 !== undefined ? e.x1 : nodes[e.a].x, y1 = e.y1 !== undefined ? e.y1 : nodes[e.a].y;
         const x2 = e.x2 !== undefined ? e.x2 : nodes[e.b].x, y2 = e.y2 !== undefined ? e.y2 : nodes[e.b].y;
         tCtx.beginPath(); tCtx.moveTo(x1, y1); tCtx.lineTo(x2, y2);
-        tCtx.lineWidth = e.w || (e.hot ? 2.4 : 1.75);
-        tCtx.strokeStyle = e.hot ? c.err : c.muted;
+        tCtx.lineWidth = e.w || (e.hot || e.hi ? 2.4 : 1.5);
+        tCtx.strokeStyle = e.hot ? c.err : e.hi ? c.primary : c.muted;
         tCtx.stroke();
 
         const ph = ((anim * (activeTopo === 'bus' ? 0.007 : 0.012)) + idx * 0.23) % 1;
-        tCtx.beginPath(); tCtx.arc(x1 + (x2 - x1) * ph, y1 + (y2 - y1) * ph, 3.5, 0, Math.PI * 2);
+        tCtx.beginPath(); tCtx.arc(x1 + (x2 - x1) * ph, y1 + (y2 - y1) * ph, (e.hot || e.hi) ? 3.8 : 2.6, 0, Math.PI * 2);
         tCtx.fillStyle = e.hot ? c.err : c.primary; tCtx.fill();
       });
 
@@ -683,22 +755,28 @@
     const hwTechs = {
       eth: {
         title: 'Red Convencional (Ethernet + TCP/IP)',
+        scope: 'Referencia base (LAN / Uso general)',
         metric: '~20 – 150 µs · Mayor carga de CPU',
-        desc: 'Los datos atraviesan el Kernel del sistema operativo y sufren copias intermedias en memoria RAM antes de enviarse por red, generando latencia y jitter bajo carga.',
+        desc: 'Los datos atraviesan el Kernel del sistema operativo y sufren copias intermedias en buffers TCP antes de salir por red, elevando latencia y jitter bajo carga.',
+        roleDb: 'Si se usa sin aislamiento para sincronizar nodos o discos, la sobrecarga de CPU y retransmisiones ralentizan las ventas concurrentes.',
         steps: ['Buffer DBMS', 'Syscall al Kernel SO', 'Copia a Socket TCP', 'Switch Ethernet', 'Kernel destino → DBMS'],
         warnIdx: [1, 2]
       },
       ib: {
         title: 'InfiniBand + RDMA (Remote Direct Memory Access)',
+        scope: 'Interconexión Nodo ↔ Nodo',
         metric: '~0.6 – 2 µs · 100–400 Gbps · Casi 0% CPU',
-        desc: 'Opera mediante Kernel-Bypass y Zero-Copy: el adaptador HCA lee o escribe directamente en la memoria RAM del nodo remoto sin pasar por el sistema operativo.',
+        desc: 'Opera mediante Kernel-Bypass y Zero-Copy: el adaptador HCA lee o escribe directo en la memoria RAM del nodo remoto sin interrumpir al sistema operativo.',
+        roleDb: 'Acelera el intercambio de páginas en memoria, bloqueos distribuidos y Hash Joins paralelos entre servidores de la tienda.',
         steps: ['RAM Nodo A', 'HCA InfiniBand', 'Switch InfiniBand', 'HCA Nodo B', 'RAM Nodo B'],
         warnIdx: []
       },
       san: {
         title: 'Red SAN (Storage Area Network · Fibre Channel / NVMe-oF)',
+        scope: 'Interconexión Servidor BD ↔ Almacenamiento',
         metric: 'Sub-milisegundo · Transporte Lossless',
-        desc: 'Aísla físicamente el tráfico de bloques (lecturas de páginas del Buffer Pool y escritura del WAL) de la red LAN de usuarios mediante rutas redundantes sin descarte de tramas.',
+        desc: 'Red física dedicada exclusivamente al tráfico de bloques entre servidores de BD y cabinas de discos mediante rutas redundantes (Multipath) sin descarte de tramas.',
+        roleDb: 'Garantiza que las lecturas fuera del Buffer Pool y la escritura síncrona del WAL de cada factura nunca compitan con la red de usuarios.',
         steps: ['Motor BD (WAL / Bloques)', 'HBA Multipath', 'Fabric SAN Aislado', 'Controladora Cabina', 'Arreglo All-Flash NVMe'],
         warnIdx: []
       }
@@ -715,11 +793,14 @@
       const h = hwTechs[activeHw];
       document.getElementById('hwDetailPanel').innerHTML = `
         <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[var(--border)]">
-          <h2 class="text-base font-bold text-[var(--foreground)]">${h.title}</h2>
-          <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]">${h.metric}</span>
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">${h.scope}</div>
+            <h2 class="text-base font-bold text-[var(--foreground)] mt-0.5">${h.title}</h2>
+          </div>
+          <span class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]">${h.metric}</span>
         </div>
-        <p class="text-sm text-[var(--foreground)] opacity-90 leading-relaxed">${h.desc}</p>
-        <div class="grid grid-cols-1 sm:grid-cols-5 gap-2.5 pt-1">
+        <p class="text-sm text-[var(--foreground)] leading-relaxed">${h.desc}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
           ${h.steps.map((st, i) => `
             <div class="bg-[var(--card)] rounded-lg px-3 py-2.5 border-2 ${h.warnIdx.includes(i) ? 'border-[var(--warning)]' : 'border-[var(--border)]'}">
               <div class="text-xs font-mono font-bold text-[var(--muted-foreground)]">0${i + 1}</div>
@@ -727,12 +808,15 @@
             </div>
           `).join('')}
         </div>
+        <div class="pt-3 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)]">
+          <strong class="text-[var(--foreground)]">Impacto en Bases de Datos II:</strong> ${h.roleDb}
+        </div>
       `;
     }
     document.querySelectorAll('.hw-btn').forEach(b => b.addEventListener('click', () => { activeHw = b.dataset.hw; renderHw(); }));
 
     // =========================================================================
-    // LÁMINA 5: DEMO HARDWARE → APP → UX
+    // LÁMINA 5: DEMO HARDWARE → APP → UX CON PRESETS INSTANTÁNEOS
     // =========================================================================
     const netProfiles = { ib: { lat: 0.1, bw: 200 }, san: { lat: 0.8, bw: 32 }, slow: { lat: 5.0, bw: 1 } };
     let activeWorkload = 'oltp';
@@ -741,13 +825,26 @@
       document.querySelectorAll('.wk-btn').forEach(b => {
         const on = b.dataset.wk === activeWorkload;
         b.className = on
-          ? 'wk-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--primary)] text-[var(--primary-foreground)]'
-          : 'wk-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--card)] text-[var(--foreground)] hover:border-[var(--primary)]';
+          ? 'wk-btn px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition bg-[var(--primary)] text-[var(--primary-foreground)]'
+          : 'wk-btn px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition bg-[var(--background)] text-[var(--foreground)]';
       });
     }
     document.querySelectorAll('.wk-btn').forEach(b => b.addEventListener('click', () => {
       activeWorkload = b.dataset.wk;
       updateWorkloadButtons();
+      updateDemo();
+    }));
+
+    document.querySelectorAll('.pr-btn').forEach(b => b.addEventListener('click', () => {
+      if (b.dataset.pr === 'crit') {
+        document.getElementById('netSelect').value = 'slow';
+        document.getElementById('qRange').value = 24;
+        document.getElementById('uRange').value = 220;
+      } else {
+        document.getElementById('netSelect').value = 'ib';
+        document.getElementById('qRange').value = 24;
+        document.getElementById('uRange').value = 220;
+      }
       updateDemo();
     }));
 
@@ -766,18 +863,23 @@
       const queueMs = poolPct >= 85 ? Math.round(Math.pow(poolPct - 75, 2) * 3.5) : 0;
       const totalMs = 35 + dbMs + queueMs;
 
+      const fmtSub = v => (v > 0 && v < 10 ? v.toFixed(1) : Math.round(v));
       document.getElementById('outDbMs').textContent = `${dbMs} ms`;
+      document.getElementById('bdRtt').textContent = `${fmtSub(rttMs)} ms`;
+      document.getElementById('bdBw').textContent = `${fmtSub(bwMs)} ms`;
+      document.getElementById('bdQueue').textContent = `${queueMs} ms`;
+
       document.getElementById('outDbNote').textContent = activeWorkload === 'olap'
-        ? `Transferir 250 MB de ventas entre sucursales a ${prof.bw} Gbps suma ${Math.round(bwMs)} ms de transmisión + ${Math.round(rttMs)} ms de RTT.`
-        : `${q} consultas × ${prof.lat} ms retienen los locks sobre el stock de tallas durante la venta.`;
+        ? `Mover 250 MB de ventas entre nodos a ${prof.bw} Gbps depende directamente del ancho de banda.`
+        : `${q} viajes secuenciales × ${prof.lat} ms retienen locks sobre las variantes de prendas.`;
 
       const pBar = document.getElementById('outPoolBar');
       pBar.style.width = `${poolPct}%`;
       pBar.style.background = poolPct < 65 ? 'var(--success)' : poolPct < 90 ? 'var(--warning)' : 'var(--error)';
       document.getElementById('outPoolPct').textContent = poolPct >= 100 ? '100% saturado' : `${poolPct}% ocupado`;
       document.getElementById('outPoolNote').textContent = poolPct >= 90
-        ? 'Pool agotado (L = λ × W): nuevos compradores esperando finalizar pedido entran en cola y se encadenan timeouts.'
-        : 'El backend de ventas conserva conexiones libres en el pool.';
+        ? 'Pool agotado (L = λ × W): nuevos compradores esperando finalizar pedido entran en cola y encadenan timeouts.'
+        : 'El servidor de aplicaciones conserva conexiones libres en el pool.';
 
       const uxBadge = document.getElementById('outUxBadge');
       const title = document.getElementById('outUxTitle');
@@ -786,29 +888,45 @@
         uxBadge.style.borderColor = 'var(--success)';
         uxBadge.textContent = 'Óptima';
         title.textContent = `${totalMs} ms · HTTP 200 OK`;
-        note.textContent = 'Compra confirmada al instante; catálogo y checkout fluidos para el cliente.';
+        note.textContent = 'Compra o reporte completado al instante; experiencia fluida para el usuario final.';
       } else if (totalMs < 1200) {
         uxBadge.style.borderColor = 'var(--warning)';
         uxBadge.textContent = 'Degradada';
         title.textContent = `${totalMs} ms · Espera visible`;
-        note.textContent = 'El cliente ve el botón de pago cargando; riesgo de doble clic y abandono del carrito.';
+        note.textContent = 'El cliente ve la pantalla cargando; aumenta el riesgo de abandono y doble clic en el pago.';
       } else {
         uxBadge.style.borderColor = 'var(--error)';
         uxBadge.textContent = 'Colapso';
         title.textContent = `${(totalMs / 1000).toFixed(1)} s · HTTP 504 Timeout`;
-        note.textContent = 'La latencia física retuvo los locks de inventario, saturó el pool de la tienda y rompió la UX.';
+        note.textContent = 'La latencia física retuvo los locks de inventario, agotó el pool de la tienda y rompió la UX.';
       }
     }
     ['netSelect', 'qRange', 'uRange'].forEach(id => document.getElementById(id).addEventListener('input', updateDemo));
 
     // =========================================================================
-    // LÁMINA 6: QUIZ DE CIERRE (ESTRICTA COHERENCIA CON P1 Y P8)
+    // LÁMINA 6: QUIZ DE CIERRE CON RETROALIMENTACIÓN
     // =========================================================================
     const quickQuestions = [
-      { q: '1. En el sistema de ropa, ¿quién define índices B+Tree por SKU y la separación Data/WAL en disco?', opts: ['DBA', 'Arquitecto de SI'], ans: 0 },
-      { q: '2. ¿Quién diseña la interfaz del catálogo, balanceadores L7 y la integración con pasarela de pagos?', opts: ['DBA', 'Arquitecto de SI'], ans: 1 },
-      { q: '3. ¿Cómo reduce InfiniBand + RDMA la latencia entre nodos de BD a microsegundos?', opts: ['Aplica Kernel-Bypass y Zero-Copy directo entre memorias RAM', 'Incrementa las copias en el Kernel TCP/IP'], ans: 0 },
-      { q: '4. ¿Por qué un aumento de latencia en la red SAN genera errores 504 en el checkout de la tienda?', opts: ['Amplifica round-trips, retiene locks de inventario y satura el pool', 'Elimina los índices de las tablas'], ans: 0 }
+      {
+        q: '1. En el sistema de ropa, ¿quién define índices B+Tree por SKU y la separación Data/WAL en disco?',
+        opts: ['DBA', 'Arquitecto de SI'], ans: 0,
+        why: 'El almacenamiento físico, índices internos y separación de archivos WAL pertenecen a la arquitectura de BD (DBA).'
+      },
+      {
+        q: '2. ¿Quién diseña la interfaz del catálogo, balanceadores L7 e integración con pasarela de pagos?',
+        opts: ['DBA', 'Arquitecto de SI'], ans: 1,
+        why: 'La disposición funcional entre UI, servidores de aplicaciones y servicios corporativos corresponde al Arquitecto de SI.'
+      },
+      {
+        q: '3. ¿Cómo reduce InfiniBand + RDMA la latencia entre nodos de BD a microsegundos?',
+        opts: ['Aplica Kernel-Bypass y Zero-Copy directo entre memorias RAM', 'Incrementa copias en el Kernel TCP/IP'], ans: 0,
+        why: 'RDMA evita las copias de memoria del sistema operativo transfiriendo directamente de RAM a RAM remota.'
+      },
+      {
+        q: '4. ¿Por qué un aumento de latencia en la red SAN genera errores 504 en el checkout de la tienda?',
+        opts: ['Amplifica round-trips, retiene locks de inventario y satura el pool', 'Elimina los índices de las tablas'], ans: 0,
+        why: 'Más latencia multiplica cada consulta secuencial, retiene locks más tiempo y llena el pool de conexiones del backend.'
+      }
     ];
     const pickedAns = {};
 
@@ -820,6 +938,7 @@
 
       document.getElementById('quickQuiz').innerHTML = quickQuestions.map((item, idx) => {
         const picked = pickedAns[idx];
+        const answered = picked !== undefined;
         return `
           <div class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-4 space-y-2.5">
             <p class="text-xs font-bold text-[var(--foreground)] leading-snug">${item.q}</p>
@@ -827,7 +946,7 @@
               ${item.opts.map((opt, oIdx) => {
                 let st = 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] hover:border-[var(--primary)]';
                 let prefix = '';
-                if (picked !== undefined) {
+                if (answered) {
                   if (oIdx === item.ans) {
                     st = 'bg-[var(--card)] border-2 border-[var(--success)] text-[var(--foreground)] font-bold';
                     prefix = '✓ ';
@@ -839,6 +958,7 @@
                 return `<button data-qi="${idx}" data-oi="${oIdx}" type="button" class="qq-btn px-3 py-1.5 rounded-lg text-xs border cursor-pointer text-left transition ${st}">${prefix}${opt}</button>`;
               }).join('')}
             </div>
+            ${answered ? `<p class="text-xs text-[var(--muted-foreground)] pt-1 border-t border-[var(--border)]">${item.why}</p>` : ''}
           </div>
         `;
       }).join('');
