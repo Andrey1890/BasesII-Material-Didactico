@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bases de Datos II: Arquitecturas de BD vs. SI y Topologías Físicas</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    .slide { display: none; }
+    .slide.active {
+      display: block;
+      animation: fadeUp 0.18s ease-out;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    button:focus-visible, select:focus-visible, input:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+    .transition-w { transition: width 0.25s ease; }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased m-0 p-0">
+  <div class="max-w-4xl mx-auto px-4 py-5 md:px-6 md:py-7 space-y-5">
+
+    <!-- CABECERA SOBRIA Y DE ALTO CONTRASTE (IHC) -->
+    <header class="bg-[var(--card)] border border-[var(--border)] rounded-2xl overflow-hidden">
+      <div class="w-full h-1 bg-[var(--background)]">
+        <div id="topProgress" class="h-full bg-[var(--primary)] transition-w" style="width: 16.6%;"></div>
+      </div>
+
+      <div class="px-5 py-3.5 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <span id="slideBadge" class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] shrink-0">
+            01 / 06
+          </span>
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-[var(--foreground)] truncate" id="topicLabel">
+              Bases de Datos II · Pregunta 1: Delimitación de Capas
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="toggleNotesBtn" type="button"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:border-[var(--primary)] transition cursor-pointer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+            </svg>
+            <span id="notesBtnLabel">Guía oral</span>
+          </button>
+
+          <div class="inline-flex items-center gap-1">
+            <button id="prevBtn" type="button" aria-label="Lámina anterior"
+              class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              Anterior
+            </button>
+            <button id="nextBtn" type="button" aria-label="Siguiente lámina"
+              class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--primary)] text-[var(--primary-foreground)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+              Siguiente
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <nav class="px-5 py-2.5 bg-[var(--background)] border-t border-[var(--border)] flex items-center gap-1.5 overflow-x-auto" aria-label="Índice de láminas">
+        <button data-slide="0" class="slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition">1. Capas (P1)</button>
+        <button data-slide="1" class="slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition">2. Comparativa (P1)</button>
+        <button data-slide="2" class="slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition">3. Topologías (P8)</button>
+        <button data-slide="3" class="slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition">4. InfiniBand y SAN (P8)</button>
+        <button data-slide="4" class="slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition">5. Hardware → App → UX (P8)</button>
+        <button data-slide="5" class="slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition">6. Síntesis y Quiz</button>
+      </nav>
+    </header>
+
+    <!-- NOTAS DEL EXPOSITOR -->
+    <aside id="speakerNotesBox" class="hidden bg-[var(--card)] border border-[var(--border)] border-l-4 border-l-[var(--primary)] rounded-xl px-5 py-3.5 text-sm">
+      <div class="text-xs font-bold uppercase tracking-wide text-[var(--foreground)] mb-1">Guía oral sugerida (~1 min)</div>
+      <p id="speakerNotesText" class="text-[var(--foreground)] leading-relaxed"></p>
+    </aside>
+
+    <!-- LIENZO PRINCIPAL -->
+    <main class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-6 md:p-8">
+
+      <!-- =============================================================== -->
+      <!-- LÁMINA 1: PREGUNTA 1 — DEFINICIÓN Y DELIMITACIÓN DE CAPAS       -->
+      <!-- =============================================================== -->
+      <section class="slide active space-y-6" data-topic="Bases de Datos II · Pregunta 1: Delimitación de Capas"
+        data-notes="Para entender la diferencia entre Base de Datos y Sistema de Información, pensemos en nuestro sistema transaccional de ropa. La arquitectura de BD, liderada por el DBA, define cómo se almacenan, organizan, acceden y mantienen los datos dentro del DBMS: tablas de prendas, tallas, inventario, índices y reglas ACID. La arquitectura del sistema de información, liderada por el Arquitecto de SI, define toda la disposición funcional: el catálogo web/móvil, los servidores de aplicaciones del carrito y la integración con pasarela de pagos y facturación. Donde el código envía consultas SQL es la frontera compartida.">
+
+        <div class="space-y-1">
+          <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Pregunta 1</div>
+          <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">
+            Definición y Delimitación de Capas (DBA vs. Arquitecto de SI)
+          </h1>
+          <p class="text-sm text-[var(--muted-foreground)]">
+            Contraste entre la estructura lógico-física del DBMS y la disposición funcional del sistema, aplicado al sistema transaccional de ropa.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-4 border-y border-[var(--border)]">
+          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-2)]">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Arquitectura de Base de Datos · DBA</div>
+            <h2 class="text-base font-bold text-[var(--foreground)]">Diseño lógico-físico interno del DBMS</h2>
+            <p class="text-sm text-[var(--foreground)] leading-relaxed">
+              Rige cómo se almacenan, organizan, acceden y mantienen los datos en el motor (esquema, índices B+Tree, particiones, Buffer Pool, ACID y WAL).
+            </p>
+          </div>
+          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-1)]">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Arquitectura de SI · Arquitecto de SI</div>
+            <h2 class="text-base font-bold text-[var(--foreground)]">Disposición funcional del sistema completo</h2>
+            <p class="text-sm text-[var(--foreground)] leading-relaxed">
+              Integra interfaz de usuario, servidores de aplicaciones, balanceadores, cachés y servicios corporativos externos (pagos, facturación, ERP).
+            </p>
+          </div>
+        </div>
+
+        <!-- Maestro-Detalle de las 4 Capas -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          <div class="md:col-span-5 divide-y divide-[var(--border)] border border-[var(--border)] rounded-xl overflow-hidden" id="layersMaster"></div>
+          <div class="md:col-span-7 bg-[var(--background)] border border-[var(--border)] rounded-xl p-5 space-y-4" id="layersDetail"></div>
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- LÁMINA 2: PREGUNTA 1 — OBJETIVOS, MÉTRICAS E INFRAESTRUCTURA    -->
+      <!-- =============================================================== -->
+      <section class="slide space-y-6" data-topic="Bases de Datos II · Pregunta 1: Objetivos, Métricas e Infraestructura"
+        data-notes="En la Pregunta 1 debemos explicar tres diferencias puntuales entre ambos roles. Primero, en objetivos de diseño: el DBA garantiza integridad ACID al descontar stock de prendas y optimiza lecturas en disco; el Arquitecto integra el catálogo con pagos y escala el sitio. Segundo, en métricas clave: el DBA mide aciertos en RAM (Buffer Pool Hit Ratio), IOPS y bloqueos; el Arquitecto mide latencia p95 del checkout, RPS y SLA. Tercero, en decisiones de infraestructura: el DBA define almacenamiento NVMe/SAN, RAID 10 y pooling; el Arquitecto define nube, balanceadores L7 y caché Redis.">
+
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div class="space-y-1">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Pregunta 1</div>
+            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">
+              Objetivos, Métricas Clave e Infraestructura
+            </h1>
+            <p class="text-sm text-[var(--muted-foreground)]">
+              Selecciona una dimensión para contrastar las responsabilidades del DBA y del Arquitecto de SI.
+            </p>
+          </div>
+
+          <div class="inline-flex bg-[var(--background)] border border-[var(--border)] p-1 rounded-xl gap-1 self-start" id="axisControl">
+            <button data-ax="obj" class="ax-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">1. Objetivos</button>
+            <button data-ax="kpi" class="ax-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">2. Métricas</button>
+            <button data-ax="inf" class="ax-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">3. Infraestructura</button>
+          </div>
+        </div>
+
+        <div id="axisComparisonPanel" class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-5 md:p-6"></div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- LÁMINA 3: PREGUNTA 8 — TOPOLOGÍAS DE RED                        -->
+      <!-- =============================================================== -->
+      <section class="slide space-y-6" data-topic="Bases de Datos II · Pregunta 8: Topologías de Red"
+        data-notes="Ahora pasamos a la Pregunta 8. Cuando una tienda de ropa o sistema empresarial crece a múltiples sucursales y se apoya en una BD paralela o distribuida, los nodos deben intercambiar filas para resolver JOINs distribuidos o validar commits. Fíjense en las rutas resaltadas en el gráfico: el Bus satura un único canal; la Malla 2D requiere varios saltos de esquina a esquina; el Hipercubo acorta la distancia a log2(N) con muchas rutas paralelas; y el Árbol clásico crea cuello de botella en el switch raíz, lo cual el Fat-Tree soluciona duplicando rutas arriba.">
+
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div class="space-y-1">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Pregunta 8</div>
+            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">
+              Topologías de red en BD paralelas y distribuidas
+            </h1>
+            <p class="text-sm text-[var(--muted-foreground)]">
+              Impacto del diseño físico de red en operaciones de redistribución (Hash Join Shuffle) y consenso entre nodos.
+            </p>
+          </div>
+
+          <div class="inline-flex flex-wrap bg-[var(--background)] border border-[var(--border)] p-1 rounded-xl gap-1 self-start" id="topoControl">
+            <button data-t="bus" class="t-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">Bus</button>
+            <button data-t="mesh" class="t-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">Malla</button>
+            <button data-t="hypercube" class="t-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">Hipercubo</button>
+            <button data-t="tree" class="t-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">Árbol</button>
+            <button data-t="fattree" class="t-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">Fat-Tree</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <div class="md:col-span-7 bg-[var(--background)] border border-[var(--border)] rounded-xl p-4">
+            <canvas id="topoCanvas" class="w-full" style="height: 255px;"></canvas>
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-[var(--border)] mt-2 text-xs text-[var(--foreground)]">
+              <span id="topoCanvasNote">Ruta crítica resaltada en clúster de 8 nodos</span>
+              <span id="topoStatusTag" class="font-bold">--</span>
+            </div>
+          </div>
+
+          <div class="md:col-span-5 space-y-4" id="topoSummary"></div>
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- LÁMINA 4: PREGUNTA 8 — INFINIBAND Y REDES SAN                   -->
+      <!-- =============================================================== -->
+      <section class="slide space-y-6" data-topic="Bases de Datos II · Pregunta 8: InfiniBand y Redes SAN"
+        data-notes="Para acelerar la comunicación física existen dos tecnologías clave que pregunta la rúbrica. Primero, InfiniBand con RDMA para conectar nodos entre sí: a diferencia de Ethernet TCP/IP que entra al Kernel del SO y copia datos en buffers gastando CPU, RDMA hace Kernel-Bypass y Zero-Copy directo de RAM a RAM remota en microsegundos. Segundo, las redes SAN (Fibre Channel o NVMe-oF) para conectar servidores con cabinas de discos mediante un canal dedicado, redundante y lossless, protegiendo las lecturas de stock y la escritura del WAL.">
+
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div class="space-y-1">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Pregunta 8</div>
+            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">
+              Interconexión física: InfiniBand (RDMA) y Redes SAN
+            </h1>
+            <p class="text-sm text-[var(--muted-foreground)]">
+              Diferencia entre comunicación nodo-a-nodo de ultra baja latencia y almacenamiento dedicado en bloques.
+            </p>
+          </div>
+
+          <div class="inline-flex flex-wrap bg-[var(--background)] border border-[var(--border)] p-1 rounded-xl gap-1 self-start" id="hwControl">
+            <button data-hw="eth" class="hw-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">Ethernet TCP/IP</button>
+            <button data-hw="ib" class="hw-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">InfiniBand + RDMA</button>
+            <button data-hw="san" class="hw-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition">Red SAN</button>
+          </div>
+        </div>
+
+        <div id="hwDetailPanel" class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-5 md:p-6 space-y-5"></div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- LÁMINA 5: PREGUNTA 8 — LATENCIA Y ANCHO DE BANDA → APP → UX     -->
+      <!-- =============================================================== -->
+      <section class="slide space-y-6" data-topic="Bases de Datos II · Pregunta 8: Latencia, Ancho de Banda y UX"
+        data-notes="Aquí demostramos el impacto directo del hardware de BD sobre la aplicación y el usuario final. Usen los dos botones de escenario para mostrar el contraste en clase: en una venta de ropa (OLTP), múltiples round-trips sobre una red con alta latencia retienen los locks de inventario por más tiempo, llenan el pool de conexiones del servidor de aplicaciones (Ley de Little) y terminan dando errores 504 Timeout al comprador. Y en un cierre de inventario (OLAP 250 MB), un bajo ancho de banda retrasa la transferencia masiva de datos.">
+
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div class="space-y-1">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Pregunta 8</div>
+            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">
+              Cómo la Latencia y Ancho de Banda condicionan la App y UX
+            </h1>
+            <p class="text-sm text-[var(--muted-foreground)]">
+              Simulación en vivo sobre el sistema transaccional de ropa: del canal físico al navegador del comprador.
+            </p>
+          </div>
+
+          <div class="inline-flex flex-wrap bg-[var(--background)] border border-[var(--border)] p-1 rounded-xl gap-1 self-start" id="presetBar">
+            <button data-pr="crit" class="pr-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--card)] text-[var(--foreground)] hover:border-[var(--primary)]">
+              Caso Crítico (Red Lenta)
+            </button>
+            <button data-pr="opt" class="pr-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--card)] text-[var(--foreground)] hover:border-[var(--primary)]">
+              Caso Óptimo (IB + SAN)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          <div class="md:col-span-5 bg-[var(--background)] border border-[var(--border)] rounded-xl p-5 space-y-4">
+            <div class="space-y-1.5">
+              <div class="text-xs font-bold text-[var(--foreground)]">Tipo de operación en la tienda</div>
+              <div class="grid grid-cols-2 gap-1.5 bg-[var(--card)] border border-[var(--border)] p-1 rounded-lg" id="workloadControl">
+                <button data-wk="oltp" class="wk-btn px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition">Checkout (OLTP)</button>
+                <button data-wk="olap" class="wk-btn px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition">Cierre 250 MB (OLAP)</button>
+              </div>
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="netSelect" class="text-xs font-bold text-[var(--foreground)] block">Canal físico de la base de datos</label>
+              <select id="netSelect" class="w-full bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-lg px-3 py-2 text-xs font-semibold">
+                <option value="ib">InfiniBand RDMA + SAN NVMe (0.1 ms · 200 Gbps)</option>
+                <option value="san">Red SAN Dedicada (0.8 ms · 32 Gbps)</option>
+                <option value="slow" selected>Red compartida congestionada (5.0 ms · 1 Gbps)</option>
+              </select>
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <label for="qRange" class="font-bold text-[var(--foreground)]">Consultas SQL por petición</label>
+                <span id="qVal" class="font-mono font-bold text-[var(--foreground)]">20 SQL</span>
+              </div>
+              <input id="qRange" type="range" min="2" max="40" value="20" class="w-full accent-[var(--primary)]" />
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <label for="uRange" class="font-bold text-[var(--foreground)]">Concurrencia en la aplicación</label>
+                <span id="uVal" class="font-mono font-bold text-[var(--foreground)]">150 req/s</span>
+              </div>
+              <input id="uRange" type="range" min="20" max="400" step="10" value="150" class="w-full accent-[var(--primary)]" />
+            </div>
+          </div>
+
+          <div class="md:col-span-7 space-y-4 pl-5 border-l-2 border-[var(--border)]">
+            <div class="space-y-2">
+              <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">1. Nivel Hardware / Motor DBMS</div>
+              <div class="flex items-baseline gap-3">
+                <span id="outDbMs" class="text-lg font-mono font-bold text-[var(--foreground)]">-- ms</span>
+                <span id="outDbNote" class="text-xs text-[var(--foreground)]">--</span>
+              </div>
+              <!-- Desglose compacto RTT vs Ancho de Banda -->
+              <div class="grid grid-cols-3 gap-2 pt-1 text-xs">
+                <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg px-2.5 py-1.5">
+                  <div class="text-[var(--muted-foreground)]">Por Latencia (RTT)</div>
+                  <div id="bdRtt" class="font-mono font-bold text-[var(--foreground)]">-- ms</div>
+                </div>
+                <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg px-2.5 py-1.5">
+                  <div class="text-[var(--muted-foreground)]">Por Ancho Banda</div>
+                  <div id="bdBw" class="font-mono font-bold text-[var(--foreground)]">-- ms</div>
+                </div>
+                <div class="bg-[var(--background)] border border-[var(--border)] rounded-lg px-2.5 py-1.5">
+                  <div class="text-[var(--muted-foreground)]">Cola / Locks</div>
+                  <div id="bdQueue" class="font-mono font-bold text-[var(--foreground)]">-- ms</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-2 pt-3 border-t border-[var(--border)]">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold uppercase tracking-wider text-[var(--muted-foreground)]">2. Servidor de Aplicaciones (Pool de Conexiones)</span>
+                <span id="outPoolPct" class="font-mono font-bold text-[var(--foreground)]">--%</span>
+              </div>
+              <div class="w-full h-2.5 rounded-full bg-[var(--background)] border border-[var(--border)] overflow-hidden">
+                <div id="outPoolBar" class="h-full transition-w" style="width: 40%;"></div>
+              </div>
+              <p id="outPoolNote" class="text-xs text-[var(--foreground)]">--</p>
+            </div>
+
+            <div class="space-y-1.5 pt-3 border-t border-[var(--border)]">
+              <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">3. Experiencia de Usuario Final (UX)</div>
+              <div class="flex items-center gap-2.5">
+                <span id="outUxBadge" class="text-xs font-bold px-2.5 py-0.5 rounded-full border-2 bg-[var(--background)] text-[var(--foreground)]">--</span>
+                <span id="outUxTitle" class="text-base font-bold text-[var(--foreground)]">--</span>
+              </div>
+              <p id="outUxNote" class="text-xs text-[var(--foreground)] leading-relaxed">--</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =============================================================== -->
+      <!-- LÁMINA 6: CIERRE Y COMPROBACIÓN                                 -->
+      <!-- =============================================================== -->
+      <section class="slide space-y-6" data-topic="Bases de Datos II · Síntesis y Comprobación"
+        data-notes="En resumen para cerrar: en la Pregunta 1, el DBA diseña la estructura lógico-física y consistencia ACID dentro del DBMS, mientras el Arquitecto de SI organiza la interfaz, los servidores de aplicaciones y los servicios corporativos. En la Pregunta 8, las topologías de red y tecnologías físicas como InfiniBand RDMA y SAN determinan la latencia y el ancho de banda; si el canal físico se degrada, los locks retienen conexiones, el pool se agota y el usuario final percibe lentitud o errores de sistema.">
+
+        <div class="space-y-1">
+          <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Bases de Datos II · Cierre</div>
+          <h1 class="text-xl md:text-2xl font-bold tracking-tight text-[var(--foreground)]">Síntesis de las Preguntas 1 y 8</h1>
+          <p class="text-sm text-[var(--muted-foreground)]">Conclusiones clave y cuatro preguntas rápidas de comprobación.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-4 border-y border-[var(--border)]">
+          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-2)]">
+            <div class="text-xs font-bold uppercase text-[var(--muted-foreground)]">Conclusión Pregunta 1</div>
+            <p class="text-sm text-[var(--foreground)] leading-relaxed">
+              El <strong>DBA</strong> gobierna almacenamiento, organización, acceso, índices e integridad ACID en el DBMS; el <strong>Arquitecto de SI</strong> orquesta interfaz, servidores de aplicaciones e integración de servicios corporativos.
+            </p>
+          </div>
+          <div class="space-y-1.5 pl-4 border-l-4 border-[var(--chart-1)]">
+            <div class="text-xs font-bold uppercase text-[var(--muted-foreground)]">Conclusión Pregunta 8</div>
+            <p class="text-sm text-[var(--foreground)] leading-relaxed">
+              Topologías de bajo diámetro (<strong>Hipercubo / Fat-Tree</strong>) con <strong>InfiniBand (RDMA)</strong> y <strong>redes SAN</strong> evitan retención de locks, agotamiento del pool de aplicación y timeouts en la UX.
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Comprobación rápida</span>
+            <span id="qScore" class="font-mono font-bold text-[var(--foreground)]">0 / 4 respondidas</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="quickQuiz"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // =========================================================================
+    // NAVEGACIÓN PRINCIPAL
+    // =========================================================================
+    let currentSlide = 0;
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const tabs = Array.from(document.querySelectorAll('.slide-tab'));
+    let notesOpen = false;
+
+    function goToSlide(idx) {
+      currentSlide = Math.max(0, Math.min(slides.length - 1, idx));
+      slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+      tabs.forEach((t, i) => {
+        t.className = i === currentSlide
+          ? 'slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition bg-[var(--primary)] text-[var(--primary-foreground)]'
+          : 'slide-tab px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer transition bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] hover:border-[var(--primary)]';
+      });
+
+      document.getElementById('slideBadge').textContent = `0${currentSlide + 1} / 0${slides.length}`;
+      document.getElementById('topicLabel').textContent = slides[currentSlide].dataset.topic;
+      document.getElementById('speakerNotesText').textContent = slides[currentSlide].dataset.notes;
+      document.getElementById('topProgress').style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+      document.getElementById('prevBtn').disabled = currentSlide === 0;
+      document.getElementById('nextBtn').disabled = currentSlide === slides.length - 1;
+
+      if (currentSlide === 2) resizeCanvas();
+      if (currentSlide === 4) updateDemo();
+    }
+
+    tabs.forEach(t => t.addEventListener('click', () => goToSlide(Number(t.dataset.slide))));
+    document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+    document.addEventListener('keydown', e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+      if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+    });
+    document.getElementById('toggleNotesBtn').addEventListener('click', () => {
+      notesOpen = !notesOpen;
+      document.getElementById('speakerNotesBox').classList.toggle('hidden', !notesOpen);
+      document.getElementById('notesBtnLabel').textContent = notesOpen ? 'Ocultar guía' : 'Guía oral';
+    });
+
+    // =========================================================================
+    // LÁMINA 1: CAPAS (MAESTRO-DETALLE ESTRUCTURADO)
+    // =========================================================================
+    const layers = [
+      {
+        id: 0, title: '1. Interfaz de Usuario (UI)', role: 'Arquitecto de SI', color: 'var(--chart-1)',
+        what: 'Aplicación web/móvil de la tienda y entrega de recursos estáticos mediante CDN.',
+        ropa: 'Catálogo de prendas, selector de tallas/colores, carrito de compras y vista de checkout.',
+        fail: 'Diseño pesado o sin caché de imágenes ralentiza el navegador incluso cuando la BD está libre.'
+      },
+      {
+        id: 1, title: '2. Servidores de Aplicaciones e Integración', role: 'Arquitecto de SI', color: 'var(--chart-1)',
+        what: 'Lógica de negocio, balanceadores de carga L4/L7, caché en memoria (Redis) e integración corporativa.',
+        ropa: 'Backend de pedidos, pasarela de pagos, facturación electrónica, sistema de envíos y caché de precios.',
+        fail: 'Una pasarela bancaria lenta sin Circuit Breaker ni timeouts bloquea hilos y cae todo el sitio web.'
+      },
+      {
+        id: 2, title: '3. Frontera de Acceso a Datos', role: 'Responsabilidad Compartida', color: 'var(--warning)',
+        what: 'Interfaz entre programación y DBMS: gestión del pool de conexiones, ORMs y sentencias SQL enviadas.',
+        ropa: 'Consultas al validar cada prenda del carrito, descontar stock de variante y confirmar el pedido.',
+        fail: 'Consultas N+1 en bucle o pools mal dimensionados agotan la memoria y sesiones del DBMS.'
+      },
+      {
+        id: 3, title: '4. Motor DBMS y Almacenamiento Físico', role: 'DBA', color: 'var(--chart-2)',
+        what: 'Diseño lógico-físico: tablas, índices B+Tree, particiones, Buffer Pool en RAM, ACID/locks, WAL y discos.',
+        ropa: 'Tablas Prendas, Variantes_Talla_Color, Inventario y Pedidos con bloqueo ACID al vender la última unidad.',
+        fail: 'Sin índices o con WAL lento se producen Full Table Scans, deadlocks en inventario y riesgo de pérdida ante fallos.'
+      }
+    ];
+    let activeLayer = 2;
+
+    function renderLayers() {
+      document.getElementById('layersMaster').innerHTML = layers.map(l => {
+        const sel = l.id === activeLayer;
+        return `
+          <button data-lid="${l.id}" type="button"
+            class="l-btn w-full text-left px-4 py-3 flex items-center justify-between gap-2 cursor-pointer transition ${
+              sel ? 'bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold' : 'bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--background)]'
+            }">
+            <span class="flex items-center gap-2.5 text-xs md:text-sm">
+              <span class="w-2.5 h-2.5 rounded-full shrink-0 border border-[var(--card)]" style="background:${l.color}"></span>
+              ${l.title}
+            </span>
+            <span class="text-xs">${sel ? '●' : '→'}</span>
+          </button>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.l-btn').forEach(b => b.addEventListener('click', () => {
+        activeLayer = Number(b.dataset.lid);
+        renderLayers();
+      }));
+
+      const cur = layers[activeLayer];
+      document.getElementById('layersDetail').innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[var(--border)]">
+          <h3 class="text-base font-bold text-[var(--foreground)]">${cur.title}</h3>
+          <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full bg-[var(--card)] border-2 text-[var(--foreground)]" style="border-color:${cur.color}">
+            <span class="w-2 h-2 rounded-full" style="background:${cur.color}"></span>
+            ${cur.role}
+          </span>
+        </div>
+        <div class="space-y-3 text-sm">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-0.5">Componentes técnicos</div>
+            <p class="text-[var(--foreground)] leading-relaxed">${cur.what}</p>
+          </div>
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-0.5">En el sistema transaccional de ropa</div>
+            <p class="text-[var(--foreground)] leading-relaxed">${cur.ropa}</p>
+          </div>
+          <div class="pt-2 border-t border-[var(--border)]">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-0.5">Riesgo si falla el diseño</div>
+            <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">${cur.fail}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // LÁMINA 2: COMPARATIVA ESTRICTA P1 + CASO APLICADO AL SISTEMA DE ROPA
+    // =========================================================================
+    const axisData = {
+      obj: {
+        title: '1. Objetivos de Diseño',
+        dba: [
+          'Garantizar integridad y consistencia ACID (PK/FK entre Pedidos, Detalle y Stock de tallas sin sobreventas).',
+          'Minimizar E/S física en disco mediante índices B+Tree por SKU, particionamiento de ventas y ajuste del Query Optimizer.',
+          'Asegurar disponibilidad y recuperabilidad del dato (backups, Point-in-Time Recovery y replicación).'
+        ],
+        arq: [
+          'Alinear la disposición funcional del sistema con los procesos del negocio (catálogo, carrito, pagos y despacho).',
+          'Garantizar interoperabilidad e integración con servicios corporativos (pasarela bancaria, facturación electrónica, ERP).',
+          'Lograr escalabilidad horizontal en picos de demanda, modularidad y tolerancia a fallos parciales.'
+        ],
+        caseNote: 'Ejemplo en temporada alta: el DBA evita que dos compradores descuenten la última chaqueta talla M; el Arquitecto evita que una caída del servicio de envíos bloquee la tienda.'
+      },
+      kpi: {
+        title: '2. Métricas Clave (KPIs)',
+        dba: [
+          'Buffer Pool / Cache Hit Ratio (% de lecturas de inventario/catálogo resueltas en RAM sin ir a disco).',
+          'IOPS, latencia de disco/WAL (ms) y contención por bloqueos (Lock Wait Time / Deadlocks en inventario caliente).',
+          'Transacciones por segundo (TPS), costo de planes SQL y retraso entre réplicas (Replication Lag).'
+        ],
+        arq: [
+          'Latencia End-to-End percibida por el comprador (TTFB y percentiles p95 / p99 en el checkout).',
+          'Throughput sistémico en peticiones por segundo (RPS) y concurrencia de compradores en línea.',
+          'Disponibilidad global del servicio (SLA/SLO, ej. 99.95%), tasa de errores HTTP 5xx y MTTR.'
+        ],
+        caseNote: 'Si el checkout tarda 4 s: el Arquitecto detecta p95 elevado en la API de pagos y revisa si el cuello está en una pasarela externa o en la consulta SQL.'
+      },
+      inf: {
+        title: '3. Decisiones de Infraestructura',
+        dba: [
+          'Selección del motor DBMS y dimensionamiento de RAM para alojar el Working Set (prendas, variantes e índices).',
+          'Subsistema de E/S (NVMe local, SAN Fibre Channel, RAID 10) separando físicamente Datafiles, WAL Logs y TempDB.',
+          'Topología de alta disponibilidad de BD (Activo-Pasivo/Consenso) y connection poolers (PgBouncer).'
+        ],
+        arq: [
+          'Modelo de despliegue y cómputo (Cloud pública, híbrida, on-premise, contenedores/Kubernetes).',
+          'Topología de red perimetral (Balanceadores L4/L7, API Gateways, WAF, subredes DMZ y CDN de fotos).',
+          'Middleware desacoplado (Redis para sesiones/catálogo, colas Kafka/RabbitMQ para envío de facturas por correo).'
+        ],
+        caseNote: 'Decisión conjunta clave: el Arquitecto descarga lecturas de catálogo a Redis; el DBA protege el disco del WAL para confirmar ventas sin esperas.'
+      }
+    };
+    let activeAxis = 'obj';
+
+    function renderAxis() {
+      document.querySelectorAll('.ax-btn').forEach(b => {
+        const on = b.dataset.ax === activeAxis;
+        b.className = on
+          ? 'ax-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--primary)] text-[var(--primary-foreground)]'
+          : 'ax-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--card)] text-[var(--foreground)] hover:border-[var(--primary)]';
+      });
+      const d = axisData[activeAxis];
+      document.getElementById('axisComparisonPanel').innerHTML = `
+        <div class="text-sm font-bold text-[var(--foreground)] pb-3 mb-4 border-b border-[var(--border)]">${d.title}</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-3 pl-3 border-l-4 border-[var(--chart-2)]">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">DBA (Administrador de BD)</div>
+            <ul class="space-y-2.5 text-sm text-[var(--foreground)]">
+              ${d.dba.map(i => `<li class="flex gap-2"><span class="font-bold">•</span><span>${i}</span></li>`).join('')}
+            </ul>
+          </div>
+          <div class="space-y-3 pl-3 border-l-4 border-[var(--chart-1)]">
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Arquitecto de Sistemas de Información</div>
+            <ul class="space-y-2.5 text-sm text-[var(--foreground)]">
+              ${d.arq.map(i => `<li class="flex gap-2"><span class="font-bold">•</span><span>${i}</span></li>`).join('')}
+            </ul>
+          </div>
+        </div>
+        <div class="mt-5 pt-3 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)]">
+          <strong class="text-[var(--foreground)]">Aplicación en tienda de ropa:</strong> ${d.caseNote}
+        </div>
+      `;
+    }
+    document.querySelectorAll('.ax-btn').forEach(b => b.addEventListener('click', () => { activeAxis = b.dataset.ax; renderAxis(); }));
+
+    // =========================================================================
+    // LÁMINA 3: TOPOLOGÍAS EN CANVAS CON RUTAS DIDÁCTICAS REALES
+    // =========================================================================
+    const topos = {
+      bus: {
+        status: 'Contención O(1/N)',
+        hops: '1 salto físico (canal único)',
+        bisection: 'O(1) — Un canal compartido',
+        note: 'Todos compiten por el mismo bus: las ventas paralelas colisionan y hacen cola',
+        pro: 'Cableado mínimo y bajo costo para clústeres muy pequeños.',
+        con: 'En operaciones paralelas (Hash Join entre sucursales), el ancho de banda por nodo cae como 1/N.'
+      },
+      mesh: {
+        status: 'Diámetro O(√N)',
+        hops: 'O(√N) saltos entre extremos',
+        bisection: 'O(√N) enlaces en corte central',
+        note: 'Ruta destacada N0 → N7 atraviesa 4 saltos intermedios',
+        pro: 'Número fijo de puertos por nodo (≤4) y rutas alternativas si falla un enlace.',
+        con: 'Mensajes entre nodos opuestos recorren varios saltos, elevando la latencia de commits.'
+      },
+      hypercube: {
+        status: 'Diámetro log₂(N)',
+        hops: 'log₂(8) = 3 saltos máx.',
+        bisection: 'Excelente: N / 2 enlaces paralelos',
+        note: 'Nodos etiquetados en binario (000 a 111): distancia máx. 3 saltos',
+        pro: 'Diámetro logarítmico corto y alto ancho de banda de bisección para redistribuir tuplas (Shuffle).',
+        con: 'Escala rígidamente en potencias de 2 y exige más puertos por nodo.'
+      },
+      tree: {
+        status: 'Saturación en raíz',
+        hops: '4 saltos pasando por la raíz',
+        bisection: 'Crítica: 1 enlace superior (sobresuscrito)',
+        note: 'El tráfico entre sucursales izquierda/derecha congestiona el switch Raíz',
+        pro: 'Estructura jerárquica ordenada por racks, sencilla de cablear.',
+        con: 'El switch raíz concentra todo el tráfico inter-rama creando cuello de botella.'
+      },
+      fattree: {
+        status: 'No bloqueante',
+        hops: 'Saltos uniformes (Spine-Leaf)',
+        bisection: '100% capacidad agregada sin bloqueos',
+        note: 'Múltiples switches Spine reparten el tráfico paralelo sin atascos',
+        pro: 'Multiplica enlaces hacia niveles superiores eliminando la sobresuscripción de la raíz.',
+        con: 'Mayor inversión en switches de núcleo y cableado estructurado.'
+      }
+    };
+    let activeTopo = 'bus', anim = 0;
+    const tCanvas = document.getElementById('topoCanvas'), tCtx = tCanvas.getContext('2d');
+
+    function getColors() {
+      const s = getComputedStyle(document.documentElement), g = (v, fb) => s.getPropertyValue(v).trim() || fb;
+      return {
+        fg: g('--foreground', '#f1f5f9'),
+        muted: g('--muted-foreground', '#94a3b8'),
+        border: g('--border', '#475569'),
+        primary: g('--primary', '#3b82f6'),
+        card: g('--card', '#1e293b'),
+        err: g('--error', '#ef4444'),
+        warn: g('--warning', '#f59e0b'),
+        ok: g('--success', '#22c55e')
+      };
+    }
+
+    function renderTopoSummary() {
+      document.querySelectorAll('.t-btn').forEach(b => {
+        const on = b.dataset.t === activeTopo;
+        b.className = on
+          ? 't-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--primary)] text-[var(--primary-foreground)]'
+          : 't-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--card)] text-[var(--foreground)] hover:border-[var(--primary)]';
+      });
+      const t = topos[activeTopo];
+      document.getElementById('topoStatusTag').textContent = t.status;
+      document.getElementById('topoCanvasNote').textContent = t.note;
+      document.getElementById('topoSummary').innerHTML = `
+        <div class="grid grid-cols-2 gap-3 pb-3 border-b border-[var(--border)]">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Diámetro</div>
+            <div class="text-sm font-bold text-[var(--foreground)] mt-0.5">${t.hops}</div>
+          </div>
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">BW Bisección</div>
+            <div class="text-sm font-bold text-[var(--foreground)] mt-0.5">${t.bisection}</div>
+          </div>
+        </div>
+        <div class="pl-3 border-l-4 border-[var(--success)] space-y-1">
+          <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Ventaja</div>
+          <p class="text-sm text-[var(--foreground)] leading-relaxed">${t.pro}</p>
+        </div>
+        <div class="pl-3 border-l-4 border-[var(--warning)] space-y-1">
+          <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">Cuello en BD paralelas</div>
+          <p class="text-sm text-[var(--foreground)] leading-relaxed">${t.con}</p>
+        </div>
+      `;
+    }
+
+    function resizeCanvas() {
+      const r = tCanvas.getBoundingClientRect();
+      if (!r.width) return;
+      const dpr = window.devicePixelRatio || 1;
+      tCanvas.width = r.width * dpr; tCanvas.height = 255 * dpr;
+      tCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function drawTopo() {
+      const r = tCanvas.getBoundingClientRect();
+      if (!r.width) { requestAnimationFrame(drawTopo); return; }
+      const w = r.width, h = 255, c = getColors();
+      tCtx.clearRect(0, 0, w, h);
+
+      const nodes = [], edges = [], padX = 48;
+      if (activeTopo === 'bus') {
+        const by = h / 2;
+        edges.push({ x1: 30, y1: by, x2: w - 30, y2: by, hot: true, w: 4 });
+        for (let i = 0; i < 8; i++) {
+          const x = padX + (i / 7) * (w - 2 * padX), y = i % 2 === 0 ? by - 60 : by + 60;
+          nodes.push({ x, y, lbl: 'N' + i });
+          edges.push({ x1: x, y1: y, x2: x, y2: by, hot: true });
+        }
+      } else if (activeTopo === 'mesh') {
+        for (let row = 0; row < 2; row++) for (let col = 0; col < 4; col++) nodes.push({ x: padX + col * ((w - 2 * padX) / 3), y: 65 + row * 125, lbl: 'N' + (row * 4 + col) });
+        const routeSet = new Set(['0-1', '1-2', '2-3', '3-7']);
+        for (let row = 0; row < 2; row++) for (let col = 0; col < 4; col++) {
+          const u = row * 4 + col;
+          if (col < 3) edges.push({ a: u, b: u + 1, hi: routeSet.has(`${u}-${u + 1}`) });
+          if (row < 1) edges.push({ a: u, b: u + 4, hi: routeSet.has(`${u}-${u + 4}`) });
+        }
+      } else if (activeTopo === 'hypercube') {
+        const cx = w / 2, cy = h / 2, p1 = [[-52,-52],[52,-52],[52,52],[-52,52]], p2 = [[-96,-96],[96,-96],[96,96],[-96,96]];
+        for (let i = 0; i < 4; i++) nodes.push({ x: cx + p1[i][0], y: cy + p1[i][1], lbl: i.toString(2).padStart(3, '0') });
+        for (let i = 0; i < 4; i++) nodes.push({ x: cx + p2[i][0], y: cy + p2[i][1], lbl: (i + 4).toString(2).padStart(3, '0') });
+        const hiSet = new Set(['0-1', '1-3', '3-7']);
+        for (let i = 0; i < 8; i++) for (let b = 0; b < 3; b++) {
+          const j = i ^ (1 << b);
+          if (i < j) edges.push({ a: i, b: j, hi: hiSet.has(`${i}-${j}`) });
+        }
+      } else if (activeTopo === 'tree') {
+        nodes.push({ x: w / 2, y: 34, lbl: 'Raíz', sw: true, hot: true });
+        nodes.push({ x: w * 0.28, y: 108, lbl: 'SW 1', sw: true }); nodes.push({ x: w * 0.72, y: 108, lbl: 'SW 2', sw: true });
+        edges.push({ a: 0, b: 1, hot: true }, { a: 0, b: 2, hot: true });
+        for (let i = 0; i < 8; i++) { const idx = nodes.length; nodes.push({ x: padX + (i / 7) * (w - 2 * padX), y: 215, lbl: 'N' + i }); edges.push({ a: i < 4 ? 1 : 2, b: idx }); }
+      } else if (activeTopo === 'fattree') {
+        for (let s = 0; s < 3; s++) nodes.push({ x: w * (0.25 + s * 0.25), y: 34, lbl: 'Sp ' + (s + 1), sw: true });
+        for (let l = 0; l < 4; l++) { const li = nodes.length; nodes.push({ x: w * (0.14 + l * 0.24), y: 110, lbl: 'Lf ' + (l + 1), sw: true }); for (let s = 0; s < 3; s++) edges.push({ a: s, b: li, hi: true }); }
+        for (let i = 0; i < 8; i++) { const idx = nodes.length; nodes.push({ x: padX + (i / 7) * (w - 2 * padX), y: 215, lbl: 'N' + i }); edges.push({ a: 3 + Math.floor(i / 2), b: idx }); }
+      }
+
+      edges.forEach((e, idx) => {
+        const x1 = e.x1 !== undefined ? e.x1 : nodes[e.a].x, y1 = e.y1 !== undefined ? e.y1 : nodes[e.a].y;
+        const x2 = e.x2 !== undefined ? e.x2 : nodes[e.b].x, y2 = e.y2 !== undefined ? e.y2 : nodes[e.b].y;
+        tCtx.beginPath(); tCtx.moveTo(x1, y1); tCtx.lineTo(x2, y2);
+        tCtx.lineWidth = e.w || (e.hot || e.hi ? 2.4 : 1.5);
+        tCtx.strokeStyle = e.hot ? c.err : e.hi ? c.primary : c.muted;
+        tCtx.stroke();
+
+        const ph = ((anim * (activeTopo === 'bus' ? 0.007 : 0.012)) + idx * 0.23) % 1;
+        tCtx.beginPath(); tCtx.arc(x1 + (x2 - x1) * ph, y1 + (y2 - y1) * ph, (e.hot || e.hi) ? 3.8 : 2.6, 0, Math.PI * 2);
+        tCtx.fillStyle = e.hot ? c.err : c.primary; tCtx.fill();
+      });
+
+      nodes.forEach(n => {
+        tCtx.beginPath();
+        if (n.sw) {
+          tCtx.roundRect(n.x - 24, n.y - 12, 48, 24, 6);
+          tCtx.fillStyle = c.card; tCtx.fill();
+          tCtx.lineWidth = 2; tCtx.strokeStyle = n.hot ? c.err : c.fg; tCtx.stroke();
+        } else {
+          tCtx.arc(n.x, n.y, 14, 0, Math.PI * 2);
+          tCtx.fillStyle = c.card; tCtx.fill();
+          tCtx.lineWidth = 2; tCtx.strokeStyle = c.primary; tCtx.stroke();
+        }
+        tCtx.fillStyle = c.fg; tCtx.font = '700 10px ui-monospace, monospace'; tCtx.textAlign = 'center'; tCtx.textBaseline = 'middle';
+        tCtx.fillText(n.lbl, n.x, n.y);
+      });
+
+      anim++;
+      requestAnimationFrame(drawTopo);
+    }
+    document.querySelectorAll('.t-btn').forEach(b => b.addEventListener('click', () => { activeTopo = b.dataset.t; renderTopoSummary(); }));
+
+    // =========================================================================
+    // LÁMINA 4: INFINIBAND Y REDES SAN
+    // =========================================================================
+    const hwTechs = {
+      eth: {
+        title: 'Red Convencional (Ethernet + TCP/IP)',
+        scope: 'Referencia base (LAN / Uso general)',
+        metric: '~20 – 150 µs · Mayor carga de CPU',
+        desc: 'Los datos atraviesan el Kernel del sistema operativo y sufren copias intermedias en buffers TCP antes de salir por red, elevando latencia y jitter bajo carga.',
+        roleDb: 'Si se usa sin aislamiento para sincronizar nodos o discos, la sobrecarga de CPU y retransmisiones ralentizan las ventas concurrentes.',
+        steps: ['Buffer DBMS', 'Syscall al Kernel SO', 'Copia a Socket TCP', 'Switch Ethernet', 'Kernel destino → DBMS'],
+        warnIdx: [1, 2]
+      },
+      ib: {
+        title: 'InfiniBand + RDMA (Remote Direct Memory Access)',
+        scope: 'Interconexión Nodo ↔ Nodo',
+        metric: '~0.6 – 2 µs · 100–400 Gbps · Casi 0% CPU',
+        desc: 'Opera mediante Kernel-Bypass y Zero-Copy: el adaptador HCA lee o escribe directo en la memoria RAM del nodo remoto sin interrumpir al sistema operativo.',
+        roleDb: 'Acelera el intercambio de páginas en memoria, bloqueos distribuidos y Hash Joins paralelos entre servidores de la tienda.',
+        steps: ['RAM Nodo A', 'HCA InfiniBand', 'Switch InfiniBand', 'HCA Nodo B', 'RAM Nodo B'],
+        warnIdx: []
+      },
+      san: {
+        title: 'Red SAN (Storage Area Network · Fibre Channel / NVMe-oF)',
+        scope: 'Interconexión Servidor BD ↔ Almacenamiento',
+        metric: 'Sub-milisegundo · Transporte Lossless',
+        desc: 'Red física dedicada exclusivamente al tráfico de bloques entre servidores de BD y cabinas de discos mediante rutas redundantes (Multipath) sin descarte de tramas.',
+        roleDb: 'Garantiza que las lecturas fuera del Buffer Pool y la escritura síncrona del WAL de cada factura nunca compitan con la red de usuarios.',
+        steps: ['Motor BD (WAL / Bloques)', 'HBA Multipath', 'Fabric SAN Aislado', 'Controladora Cabina', 'Arreglo All-Flash NVMe'],
+        warnIdx: []
+      }
+    };
+    let activeHw = 'ib';
+
+    function renderHw() {
+      document.querySelectorAll('.hw-btn').forEach(b => {
+        const on = b.dataset.hw === activeHw;
+        b.className = on
+          ? 'hw-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--primary)] text-[var(--primary-foreground)]'
+          : 'hw-btn px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition bg-[var(--card)] text-[var(--foreground)] hover:border-[var(--primary)]';
+      });
+      const h = hwTechs[activeHw];
+      document.getElementById('hwDetailPanel').innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[var(--border)]">
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-[var(--muted-foreground)]">${h.scope}</div>
+            <h2 class="text-base font-bold text-[var(--foreground)] mt-0.5">${h.title}</h2>
+          </div>
+          <span class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]">${h.metric}</span>
+        </div>
+        <p class="text-sm text-[var(--foreground)] leading-relaxed">${h.desc}</p>
+        <div class="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
+          ${h.steps.map((st, i) => `
+            <div class="bg-[var(--card)] rounded-lg px-3 py-2.5 border-2 ${h.warnIdx.includes(i) ? 'border-[var(--warning)]' : 'border-[var(--border)]'}">
+              <div class="text-xs font-mono font-bold text-[var(--muted-foreground)]">0${i + 1}</div>
+              <div class="text-xs font-bold text-[var(--foreground)] mt-0.5">${st}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="pt-3 border-t border-[var(--border)] text-xs text-[var(--muted-foreground)]">
+          <strong class="text-[var(--foreground)]">Impacto en Bases de Datos II:</strong> ${h.roleDb}
+        </div>
+      `;
+    }
+    document.querySelectorAll('.hw-btn').forEach(b => b.addEventListener('click', () => { activeHw = b.dataset.hw; renderHw(); }));
+
+    // =========================================================================
+    // LÁMINA 5: DEMO HARDWARE → APP → UX CON PRESETS INSTANTÁNEOS
+    // =========================================================================
+    const netProfiles = { ib: { lat: 0.1, bw: 200 }, san: { lat: 0.8, bw: 32 }, slow: { lat: 5.0, bw: 1 } };
+    let activeWorkload = 'oltp';
+
+    function updateWorkloadButtons() {
+      document.querySelectorAll('.wk-btn').forEach(b => {
+        const on = b.dataset.wk === activeWorkload;
+        b.className = on
+          ? 'wk-btn px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition bg-[var(--primary)] text-[var(--primary-foreground)]'
+          : 'wk-btn px-2 py-1.5 rounded-md text-xs font-semibold cursor-pointer transition bg-[var(--background)] text-[var(--foreground)]';
+      });
+    }
+    document.querySelectorAll('.wk-btn').forEach(b => b.addEventListener('click', () => {
+      activeWorkload = b.dataset.wk;
+      updateWorkloadButtons();
+      updateDemo();
+    }));
+
+    document.querySelectorAll('.pr-btn').forEach(b => b.addEventListener('click', () => {
+      if (b.dataset.pr === 'crit') {
+        document.getElementById('netSelect').value = 'slow';
+        document.getElementById('qRange').value = 24;
+        document.getElementById('uRange').value = 220;
+      } else {
+        document.getElementById('netSelect').value = 'ib';
+        document.getElementById('qRange').value = 24;
+        document.getElementById('uRange').value = 220;
+      }
+      updateDemo();
+    }));
+
+    function updateDemo() {
+      const prof = netProfiles[document.getElementById('netSelect').value];
+      const q = parseInt(document.getElementById('qRange').value, 10);
+      const u = parseInt(document.getElementById('uRange').value, 10);
+      document.getElementById('qVal').textContent = `${q} SQL`;
+      document.getElementById('uVal').textContent = `${u} req/s`;
+
+      const dataMB = activeWorkload === 'olap' ? 250 : 1;
+      const rttMs = q * prof.lat;
+      const bwMs = (dataMB * 8) / prof.bw;
+      const dbMs = Math.round(rttMs + bwMs + 10);
+      const poolPct = Math.min(100, Math.round(u * (dbMs / 1000)));
+      const queueMs = poolPct >= 85 ? Math.round(Math.pow(poolPct - 75, 2) * 3.5) : 0;
+      const totalMs = 35 + dbMs + queueMs;
+
+      const fmtSub = v => (v > 0 && v < 10 ? v.toFixed(1) : Math.round(v));
+      document.getElementById('outDbMs').textContent = `${dbMs} ms`;
+      document.getElementById('bdRtt').textContent = `${fmtSub(rttMs)} ms`;
+      document.getElementById('bdBw').textContent = `${fmtSub(bwMs)} ms`;
+      document.getElementById('bdQueue').textContent = `${queueMs} ms`;
+
+      document.getElementById('outDbNote').textContent = activeWorkload === 'olap'
+        ? `Mover 250 MB de ventas entre nodos a ${prof.bw} Gbps depende directamente del ancho de banda.`
+        : `${q} viajes secuenciales × ${prof.lat} ms retienen locks sobre las variantes de prendas.`;
+
+      const pBar = document.getElementById('outPoolBar');
+      pBar.style.width = `${poolPct}%`;
+      pBar.style.background = poolPct < 65 ? 'var(--success)' : poolPct < 90 ? 'var(--warning)' : 'var(--error)';
+      document.getElementById('outPoolPct').textContent = poolPct >= 100 ? '100% saturado' : `${poolPct}% ocupado`;
+      document.getElementById('outPoolNote').textContent = poolPct >= 90
+        ? 'Pool agotado (L = λ × W): nuevos compradores esperando finalizar pedido entran en cola y encadenan timeouts.'
+        : 'El servidor de aplicaciones conserva conexiones libres en el pool.';
+
+      const uxBadge = document.getElementById('outUxBadge');
+      const title = document.getElementById('outUxTitle');
+      const note = document.getElementById('outUxNote');
+      if (totalMs < 250) {
+        uxBadge.style.borderColor = 'var(--success)';
+        uxBadge.textContent = 'Óptima';
+        title.textContent = `${totalMs} ms · HTTP 200 OK`;
+        note.textContent = 'Compra o reporte completado al instante; experiencia fluida para el usuario final.';
+      } else if (totalMs < 1200) {
+        uxBadge.style.borderColor = 'var(--warning)';
+        uxBadge.textContent = 'Degradada';
+        title.textContent = `${totalMs} ms · Espera visible`;
+        note.textContent = 'El cliente ve la pantalla cargando; aumenta el riesgo de abandono y doble clic en el pago.';
+      } else {
+        uxBadge.style.borderColor = 'var(--error)';
+        uxBadge.textContent = 'Colapso';
+        title.textContent = `${(totalMs / 1000).toFixed(1)} s · HTTP 504 Timeout`;
+        note.textContent = 'La latencia física retuvo los locks de inventario, agotó el pool de la tienda y rompió la UX.';
+      }
+    }
+    ['netSelect', 'qRange', 'uRange'].forEach(id => document.getElementById(id).addEventListener('input', updateDemo));
+
+    // =========================================================================
+    // LÁMINA 6: QUIZ DE CIERRE CON RETROALIMENTACIÓN
+    // =========================================================================
+    const quickQuestions = [
+      {
+        q: '1. En el sistema de ropa, ¿quién define índices B+Tree por SKU y la separación Data/WAL en disco?',
+        opts: ['DBA', 'Arquitecto de SI'], ans: 0,
+        why: 'El almacenamiento físico, índices internos y separación de archivos WAL pertenecen a la arquitectura de BD (DBA).'
+      },
+      {
+        q: '2. ¿Quién diseña la interfaz del catálogo, balanceadores L7 e integración con pasarela de pagos?',
+        opts: ['DBA', 'Arquitecto de SI'], ans: 1,
+        why: 'La disposición funcional entre UI, servidores de aplicaciones y servicios corporativos corresponde al Arquitecto de SI.'
+      },
+      {
+        q: '3. ¿Cómo reduce InfiniBand + RDMA la latencia entre nodos de BD a microsegundos?',
+        opts: ['Aplica Kernel-Bypass y Zero-Copy directo entre memorias RAM', 'Incrementa copias en el Kernel TCP/IP'], ans: 0,
+        why: 'RDMA evita las copias de memoria del sistema operativo transfiriendo directamente de RAM a RAM remota.'
+      },
+      {
+        q: '4. ¿Por qué un aumento de latencia en la red SAN genera errores 504 en el checkout de la tienda?',
+        opts: ['Amplifica round-trips, retiene locks de inventario y satura el pool', 'Elimina los índices de las tablas'], ans: 0,
+        why: 'Más latencia multiplica cada consulta secuencial, retiene locks más tiempo y llena el pool de conexiones del backend.'
+      }
+    ];
+    const pickedAns = {};
+
+    function renderQuiz() {
+      const answeredCount = Object.keys(pickedAns).length;
+      let okCount = 0;
+      quickQuestions.forEach((it, i) => { if (pickedAns[i] === it.ans) okCount++; });
+      document.getElementById('qScore').textContent = answeredCount ? `${okCount} / ${quickQuestions.length} correctas` : '0 / 4 respondidas';
+
+      document.getElementById('quickQuiz').innerHTML = quickQuestions.map((item, idx) => {
+        const picked = pickedAns[idx];
+        const answered = picked !== undefined;
+        return `
+          <div class="bg-[var(--background)] border border-[var(--border)] rounded-xl p-4 space-y-2.5">
+            <p class="text-xs font-bold text-[var(--foreground)] leading-snug">${item.q}</p>
+            <div class="flex flex-wrap gap-2">
+              ${item.opts.map((opt, oIdx) => {
+                let st = 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] hover:border-[var(--primary)]';
+                let prefix = '';
+                if (answered) {
+                  if (oIdx === item.ans) {
+                    st = 'bg-[var(--card)] border-2 border-[var(--success)] text-[var(--foreground)] font-bold';
+                    prefix = '✓ ';
+                  } else if (oIdx === picked) {
+                    st = 'bg-[var(--card)] border-2 border-[var(--error)] text-[var(--foreground)]';
+                    prefix = '✗ ';
+                  }
+                }
+                return `<button data-qi="${idx}" data-oi="${oIdx}" type="button" class="qq-btn px-3 py-1.5 rounded-lg text-xs border cursor-pointer text-left transition ${st}">${prefix}${opt}</button>`;
+              }).join('')}
+            </div>
+            ${answered ? `<p class="text-xs text-[var(--muted-foreground)] pt-1 border-t border-[var(--border)]">${item.why}</p>` : ''}
+          </div>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.qq-btn').forEach(b => b.addEventListener('click', () => {
+        pickedAns[Number(b.dataset.qi)] = Number(b.dataset.oi);
+        renderQuiz();
+      }));
+    }
+
+    // INICIALIZACIÓN
+    renderLayers();
+    renderAxis();
+    renderTopoSummary();
+    renderHw();
+    updateWorkloadButtons();
+    updateDemo();
+    renderQuiz();
+    goToSlide(0);
+
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('themechange', resizeCanvas);
+    requestAnimationFrame(drawTopo);
+  </script>
+</body>
+</html>
